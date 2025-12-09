@@ -1,0 +1,363 @@
+% ==============================================================================
+% REFERENCES FOR PRIME PAPER
+% ==============================================================================
+
+% ------------------------------------------------------------------------------
+% RAG AND RETRIEVAL PAPERS
+% ------------------------------------------------------------------------------
+
+@inproceedings{lewis2020rag,
+  title={Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks},
+  author={Lewis, Patrick and Perez, Ethan and Piktus, Aleksandra and Petroni, Fabio and Karpukhin, Vladimir and Goyal, Naman and K{\"u}ttler, Heinrich and Lewis, Mike and Yih, Wen-tau and Rockt{\"a}schel, Tim and others},
+  booktitle={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={9459--9474},
+  year={2020}
+}
+
+@inproceedings{guu2020realm,
+  title={REALM: Retrieval-Augmented Language Model Pre-Training},
+  author={Guu, Kelvin and Lee, Kenton and Tung, Zora and Pasupat, Panupong and Chang, Ming-Wei},
+  booktitle={International Conference on Machine Learning},
+  pages={3929--3938},
+  year={2020},
+  organization={PMLR}
+}
+
+@article{borgeaud2022retro,
+  title={Improving Language Models by Retrieving from Trillions of Tokens},
+  author={Borgeaud, Sebastian and Mensch, Arthur and Hoffmann, Jordan and Cai, Trevor and Rutherford, Eliza and Millican, Katie and Van Den Driessche, George Bm and Lespiau, Jean-Baptiste and Damoc, Bogdan and Clark, Aidan and others},
+  journal={International Conference on Machine Learning},
+  pages={2206--2240},
+  year={2022},
+  organization={PMLR}
+}
+
+@article{izacard2022atlas,
+  title={Atlas: Few-shot Learning with Retrieval Augmented Language Models},
+  author={Izacard, Gautier and Lewis, Patrick and Lomber, Maria and Hosseini, Lucas and Petroni, Fabio and Schick, Timo and Dwivedi-Yu, Jane and Joulin, Armand and Riedel, Sebastian and Grave, Edouard},
+  journal={Journal of Machine Learning Research},
+  volume={24},
+  number={251},
+  pages={1--43},
+  year={2023}
+}
+
+@inproceedings{karpukhin2020dpr,
+  title={Dense Passage Retrieval for Open-Domain Question Answering},
+  author={Karpukhin, Vladimir and O{\u{g}}uz, Barlas and Min, Sewon and Lewis, Patrick and Wu, Ledell and Edunov, Sergey and Chen, Danqi and Yih, Wen-tau},
+  booktitle={Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing},
+  pages={6769--6781},
+  year={2020}
+}
+
+% ------------------------------------------------------------------------------
+% PROMPT ENGINEERING PAPERS
+% ------------------------------------------------------------------------------
+
+@article{wei2022cot,
+  title={Chain-of-Thought Prompting Elicits Reasoning in Large Language Models},
+  author={Wei, Jason and Wang, Xuezhi and Schuurmans, Dale and Bosma, Maarten and Ichter, Brian and Xia, Fei and Chi, Ed and Le, Quoc V and Zhou, Denny},
+  journal={Advances in Neural Information Processing Systems},
+  volume={35},
+  pages={24824--24837},
+  year={2022}
+}
+
+@inproceedings{brown2020gpt3,
+  title={Language Models are Few-Shot Learners},
+  author={Brown, Tom and Mann, Benjamin and Ryder, Nick and Subbiah, Melanie and Kaplan, Jared D and Dhariwal, Prafulla and Neelakantan, Arvind and Shyam, Pranav and Sastry, Girish and Askell, Amanda and others},
+  booktitle={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={1877--1901},
+  year={2020}
+}
+
+@article{openai2023gpt4,
+  title={GPT-4 Technical Report},
+  author={OpenAI},
+  journal={arXiv preprint arXiv:2303.08774},
+  year={2023}
+}
+
+@inproceedings{zhou2023llmpe,
+  title={Large Language Models Are Human-Level Prompt Engineers},
+  author={Zhou, Yongchao and Muresanu, Andrei Ioan and Han, Ziwen and Paster, Keiran and Pitis, Silviu and Chan, Harris and Ba, Jimmy},
+  booktitle={International Conference on Learning Representations},
+  year={2023}
+}
+
+@article{kojima2022zero,
+  title={Large Language Models are Zero-Shot Reasoners},
+  author={Kojima, Takeshi and Gu, Shixiang Shane and Reid, Machel and Matsuo, Yutaka and Iwasawa, Yusuke},
+  journal={Advances in Neural Information Processing Systems},
+  volume={35},
+  pages={22199--22213},
+  year={2022}
+}
+
+@article{wang2023selfconsistency,
+  title={Self-Consistency Improves Chain of Thought Reasoning in Language Models},
+  author={Wang, Xuezhi and Wei, Jason and Schuurmans, Dale and Le, Quoc and Chi, Ed and Narang, Sharan and Chowdhery, Aakanksha and Zhou, Denny},
+  journal={International Conference on Learning Representations},
+  year={2023}
+}
+
+@inproceedings{shin2020autoprompt,
+  title={Autoprompt: Eliciting Knowledge from Language Models with Automatically Generated Prompts},
+  author={Shin, Taylor and Razeghi, Yasaman and Logan IV, Robert L and Wallace, Eric and Singh, Sameer},
+  booktitle={Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing},
+  pages={4222--4235},
+  year={2020}
+}
+
+@article{liu2023pretrain,
+  title={Pre-train, Prompt, and Predict: A Systematic Survey of Prompting Methods in Natural Language Processing},
+  author={Liu, Pengfei and Yuan, Weizhe and Fu, Jinlan and Jiang, Zhengbao and Hayashi, Hiroaki and Neubig, Graham},
+  journal={ACM Computing Surveys},
+  volume={55},
+  number={9},
+  pages={1--35},
+  year={2023}
+}
+
+@article{zhao2021calibrate,
+  title={Calibrate Before Use: Improving Few-shot Performance of Language Models},
+  author={Zhao, Tony Z and Wallace, Eric and Feng, Shi and Klein, Dan and Singh, Sameer},
+  journal={International Conference on Machine Learning},
+  pages={12697--12706},
+  year={2021},
+  organization={PMLR}
+}
+
+% ------------------------------------------------------------------------------
+% EMBEDDING AND REPRESENTATION PAPERS
+% ------------------------------------------------------------------------------
+
+@inproceedings{reimers2019sbert,
+  title={Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks},
+  author={Reimers, Nils and Gurevych, Iryna},
+  booktitle={Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing},
+  pages={3982--3992},
+  year={2019}
+}
+
+@article{robertson2009bm25,
+  title={The Probabilistic Relevance Framework: BM25 and Beyond},
+  author={Robertson, Stephen and Zaragoza, Hugo},
+  journal={Foundations and Trends in Information Retrieval},
+  volume={3},
+  number={4},
+  pages={333--389},
+  year={2009}
+}
+
+@article{salton1988tfidf,
+  title={Term-weighting Approaches in Automatic Text Retrieval},
+  author={Salton, Gerard and Buckley, Christopher},
+  journal={Information Processing \& Management},
+  volume={24},
+  number={5},
+  pages={513--523},
+  year={1988}
+}
+
+@inproceedings{muennighoff2023mteb,
+  title={MTEB: Massive Text Embedding Benchmark},
+  author={Muennighoff, Niklas and Tazi, Nouamane and Magne, Lo{\"\i}c and Reimers, Nils},
+  booktitle={Proceedings of the 17th Conference of the European Chapter of the Association for Computational Linguistics},
+  pages={2014--2037},
+  year={2023}
+}
+
+@article{wang2022text,
+  title={Text Embeddings by Weakly-Supervised Contrastive Pre-training},
+  author={Wang, Liang and Yang, Nan and Huang, Xiaolong and Jiao, Binxing and Yang, Linjun and Jiang, Daxin and Majumder, Rangan and Wei, Furu},
+  journal={arXiv preprint arXiv:2212.03533},
+  year={2022}
+}
+
+@inproceedings{devlin2019bert,
+  title={BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding},
+  author={Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina},
+  booktitle={Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics},
+  pages={4171--4186},
+  year={2019}
+}
+
+% ------------------------------------------------------------------------------
+% VECTOR DATABASE AND SIMILARITY SEARCH
+% ------------------------------------------------------------------------------
+
+@article{johnson2019faiss,
+  title={Billion-scale Similarity Search with GPUs},
+  author={Johnson, Jeff and Douze, Matthijs and J{\'e}gou, Herv{\'e}},
+  journal={IEEE Transactions on Big Data},
+  volume={7},
+  number={3},
+  pages={535--547},
+  year={2019}
+}
+
+@inproceedings{malkov2020hnsw,
+  title={Efficient and Robust Approximate Nearest Neighbor Search Using Hierarchical Navigable Small World Graphs},
+  author={Malkov, Yu A and Yashunin, Dmitry A},
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume={42},
+  number={4},
+  pages={824--836},
+  year={2020}
+}
+
+% ------------------------------------------------------------------------------
+% EVALUATION METRICS
+% ------------------------------------------------------------------------------
+
+@inproceedings{papineni2002bleu,
+  title={BLEU: A Method for Automatic Evaluation of Machine Translation},
+  author={Papineni, Kishore and Roukos, Salim and Ward, Todd and Zhu, Wei-Jing},
+  booktitle={Proceedings of the 40th Annual Meeting of the Association for Computational Linguistics},
+  pages={311--318},
+  year={2002}
+}
+
+@inproceedings{lin2004rouge,
+  title={ROUGE: A Package for Automatic Evaluation of Summaries},
+  author={Lin, Chin-Yew},
+  booktitle={Text Summarization Branches Out},
+  pages={74--81},
+  year={2004}
+}
+
+@inproceedings{zhang2020bertscore,
+  title={BERTScore: Evaluating Text Generation with BERT},
+  author={Zhang, Tianyi and Kishore, Varsha and Wu, Felix and Weinberger, Kilian Q and Artzi, Yoav},
+  booktitle={International Conference on Learning Representations},
+  year={2020}
+}
+
+@article{zheng2023judging,
+  title={Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena},
+  author={Zheng, Lianmin and Chiang, Wei-Lin and Sheng, Ying and Zhuang, Siyuan and Wu, Zhanghao and Zhuang, Yonghao and Lin, Zi and Li, Zhuohan and Li, Dacheng and Xing, Eric and others},
+  journal={Advances in Neural Information Processing Systems},
+  volume={36},
+  year={2023}
+}
+
+@article{manning2008ir,
+  title={Introduction to Information Retrieval},
+  author={Manning, Christopher D and Raghavan, Prabhakar and Sch{\"u}tze, Hinrich},
+  journal={Cambridge University Press},
+  year={2008}
+}
+
+% ------------------------------------------------------------------------------
+% LARGE LANGUAGE MODELS
+% ------------------------------------------------------------------------------
+
+@article{anthropic2024claude,
+  title={The Claude 3 Model Family: A New Standard for Intelligence},
+  author={Anthropic},
+  journal={Technical Report},
+  year={2024}
+}
+
+@article{google2024gemini,
+  title={Gemini: A Family of Highly Capable Multimodal Models},
+  author={Team, Gemini and others},
+  journal={arXiv preprint arXiv:2312.11805},
+  year={2024}
+}
+
+@article{touvron2023llama,
+  title={Llama 2: Open Foundation and Fine-Tuned Chat Models},
+  author={Touvron, Hugo and Martin, Louis and Stone, Kevin and Albert, Peter and Almahairi, Amjad and Babaei, Yasmine and Bashlykov, Nikolay and Batra, Soumya and Bhargava, Prajjwal and Bhosale, Shruti and others},
+  journal={arXiv preprint arXiv:2307.09288},
+  year={2023}
+}
+
+@article{jiang2023mistral,
+  title={Mistral 7B},
+  author={Jiang, Albert Q and Sablayrolles, Alexandre and Mensch, Arthur and Bamford, Chris and Chaplot, Devendra Singh and Casas, Diego de las and Bressand, Florian and Lengyel, Gianna and Lample, Guillaume and Saulnier, Lucile and others},
+  journal={arXiv preprint arXiv:2310.06825},
+  year={2023}
+}
+
+% ------------------------------------------------------------------------------
+% TRANSFORMER ARCHITECTURE
+% ------------------------------------------------------------------------------
+
+@inproceedings{vaswani2017attention,
+  title={Attention Is All You Need},
+  author={Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N and Kaiser, {\L}ukasz and Polosukhin, Illia},
+  booktitle={Advances in Neural Information Processing Systems},
+  volume={30},
+  year={2017}
+}
+
+% ------------------------------------------------------------------------------
+% INFORMATION THEORY
+% ------------------------------------------------------------------------------
+
+@book{cover2006elements,
+  title={Elements of Information Theory},
+  author={Cover, Thomas M and Thomas, Joy A},
+  year={2006},
+  publisher={John Wiley \& Sons}
+}
+
+% ------------------------------------------------------------------------------
+% ADDITIONAL REFERENCES
+% ------------------------------------------------------------------------------
+
+@article{carbonell1998mmr,
+  title={The Use of MMR, Diversity-Based Reranking for Reordering Documents and Producing Summaries},
+  author={Carbonell, Jaime and Goldstein, Jade},
+  journal={Proceedings of the 21st Annual International ACM SIGIR Conference on Research and Development in Information Retrieval},
+  pages={335--336},
+  year={1998}
+}
+
+@article{flesch1948readability,
+  title={A New Readability Yardstick},
+  author={Flesch, Rudolph},
+  journal={Journal of Applied Psychology},
+  volume={32},
+  number={3},
+  pages={221--233},
+  year={1948}
+}
+
+@article{raffel2020t5,
+  title={Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer},
+  author={Raffel, Colin and Shazeer, Noam and Roberts, Adam and Lee, Katherine and Narang, Sharan and Matena, Michael and Zhou, Yanqi and Li, Wei and Liu, Peter J},
+  journal={Journal of Machine Learning Research},
+  volume={21},
+  number={140},
+  pages={1--67},
+  year={2020}
+}
+
+@inproceedings{neelakantan2022text,
+  title={Text and Code Embeddings by Contrastive Pre-Training},
+  author={Neelakantan, Arvind and Xu, Tao and Puri, Raul and Radford, Alec and Han, Jesse Michael and Tworek, Jerry and Yuan, Qiming and Tezak, Nikolas and Kim, Jong Wook and Hallacy, Chris and others},
+  journal={arXiv preprint arXiv:2201.10005},
+  year={2022}
+}
+
+@article{gao2021simcse,
+  title={SimCSE: Simple Contrastive Learning of Sentence Embeddings},
+  author={Gao, Tianyu and Yao, Xingcheng and Chen, Danqi},
+  booktitle={Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing},
+  pages={6894--6910},
+  year={2021}
+}
+
+@inproceedings{ni2022large,
+  title={Large Dual Encoders Are Generalizable Retrievers},
+  author={Ni, Jianmo and Qu, Chen and Lu, Jing and Dai, Zhuyun and {\'A}brego, Gustavo Hern{\'a}ndez and Ma, Ji and Zhao, Vincent and Luan, Yi and Hall, Keith and Chang, Ming-Wei and Yang, Yinfei},
+  booktitle={Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing},
+  pages={9844--9855},
+  year={2022}
+}
+

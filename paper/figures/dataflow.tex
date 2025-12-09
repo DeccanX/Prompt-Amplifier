@@ -1,0 +1,51 @@
+% PRIME Data Flow Diagram (TikZ)
+% Include this in main.tex with: \input{figures/dataflow.tex}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    process/.style={rectangle, draw=black, thick, rounded corners, minimum width=2.5cm, minimum height=0.7cm, align=center, font=\small},
+    data/.style={cylinder, draw=black, thick, shape border rotate=90, aspect=0.25, minimum width=1.8cm, minimum height=0.6cm, align=center, font=\small},
+    io/.style={trapezium, draw=black, thick, trapezium left angle=70, trapezium right angle=110, minimum width=2cm, align=center, font=\small},
+    arrow/.style={->, thick, >=stealth},
+    label/.style={font=\scriptsize, text=black!70}
+]
+
+% Nodes
+\node[io, fill=blue!10] (input) {User Prompt $p$};
+\node[data, fill=green!10, below=of input] (corpus) {Corpus $\mathcal{K}$};
+\node[process, fill=yellow!20, below=of corpus] (chunk) {Chunk};
+\node[process, fill=orange!20, below=of chunk] (embed) {Embed $\mathcal{E}$};
+\node[data, fill=red!10, below=of embed] (vectors) {Vectors $\mathcal{V}$};
+\node[process, fill=purple!20, below=of vectors] (retrieve) {Retrieve $\mathcal{R}$};
+\node[process, fill=pink!20, below=of retrieve] (generate) {Generate $\mathcal{G}$};
+\node[io, fill=green!20, below=of generate] (output) {Expanded $p'$};
+
+% Query path
+\node[process, fill=orange!20, right=2cm of embed] (embed_q) {Embed $\mathcal{E}(p)$};
+
+% Arrows
+\draw[arrow] (input) -- (corpus);
+\draw[arrow] (corpus) -- (chunk);
+\draw[arrow] (chunk) -- (embed);
+\draw[arrow] (embed) -- (vectors);
+\draw[arrow] (vectors) -- (retrieve);
+\draw[arrow] (retrieve) -- (generate);
+\draw[arrow] (generate) -- (output);
+
+% Query embedding
+\draw[arrow] (input) -| (embed_q);
+\draw[arrow] (embed_q) |- (retrieve);
+
+% Labels
+\node[label, right=0.3cm of chunk] {$\mathcal{X}(d, s, o)$};
+\node[label, right=0.3cm of embed] {$\mathbf{e} \in \mathbb{R}^d$};
+\node[label, right=0.3cm of retrieve] {$\{c_1, ..., c_k\}$};
+\node[label, right=0.3cm of generate] {LLM$(p, context)$};
+
+\end{tikzpicture}
+\caption{Data flow through the PRIME pipeline. Documents from corpus $\mathcal{K}$ are chunked and embedded offline. At query time, the user prompt is embedded, similar chunks are retrieved, and the LLM generates the expanded prompt.}
+\label{fig:dataflow}
+\end{figure}
+
