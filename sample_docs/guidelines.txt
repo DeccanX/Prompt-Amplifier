@@ -1,0 +1,16 @@
+
+    POC Evaluation Guidelines
+    ========================
+    
+    Health Status Definitions:
+    - Healthy: All milestones on track, Winscore > 70
+    - Warning: Some delays, Winscore 40-70
+    - Critical: Major blockers, Winscore < 40
+    
+    Required Fields:
+    - Deal Name
+    - Account Executive
+    - POC Duration (weeks)
+    - Success Criteria
+    - Current Status
+    

@@ -1,0 +1,14 @@
+
+    Key Performance Metrics
+    ======================
+    
+    Winscore: Overall confidence score (0-100)
+    - Technical fit: 30%
+    - Business alignment: 30%
+    - Champion strength: 20%
+    - Timeline adherence: 20%
+    
+    Feature Fit: Percentage of required features available
+    
+    Engagement Score: Customer interaction frequency and quality
+    
