@@ -143,18 +143,28 @@ class TestBM25Embedder:
         assert len(top_results[0]) == 2
 
 
+def _has_sentence_transformers():
+    """Check if sentence-transformers is installed."""
+    try:
+        import sentence_transformers
+
+        return True
+    except ImportError:
+        return False
+
+
+@pytest.mark.skipif(
+    not _has_sentence_transformers(), reason="sentence-transformers not installed"
+)
 class TestSentenceTransformerEmbedder:
     """Tests for SentenceTransformerEmbedder (if available)."""
 
     @pytest.fixture
     def st_embedder(self):
         """Create Sentence Transformer embedder."""
-        try:
-            from prompt_amplifier.embedders import SentenceTransformerEmbedder
+        from prompt_amplifier.embedders import SentenceTransformerEmbedder
 
-            return SentenceTransformerEmbedder(model="all-MiniLM-L6-v2")
-        except ImportError:
-            pytest.skip("sentence-transformers not installed")
+        return SentenceTransformerEmbedder(model="all-MiniLM-L6-v2")
 
     def test_embed(self, st_embedder, sample_texts):
         """Test embedding with Sentence Transformers."""
