@@ -153,9 +153,7 @@ def _has_sentence_transformers():
         return False
 
 
-@pytest.mark.skipif(
-    not _has_sentence_transformers(), reason="sentence-transformers not installed"
-)
+@pytest.mark.skipif(not _has_sentence_transformers(), reason="sentence-transformers not installed")
 class TestSentenceTransformerEmbedder:
     """Tests for SentenceTransformerEmbedder (if available)."""
 
