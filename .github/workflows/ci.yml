@@ -20,6 +20,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          df -h
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
@@ -37,11 +44,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
-          pip install sentence-transformers rank-bm25
+          pip install rank-bm25
+          # Install sentence-transformers only on 3.11 to save space
+          if [ "${{ matrix.python-version }}" = "3.11" ]; then
+            pip install sentence-transformers
+          fi
 
       - name: Run tests
         run: |
-          pytest tests/ -v --tb=short --cov=prompt_amplifier --cov-report=xml
+          pytest tests/ -v --tb=short -x
 
       - name: Upload coverage to Codecov
         if: matrix.python-version == '3.11'
