@@ -1,21 +1,18 @@
-# Prompt Amplifier 🔨
+# Prompt Amplifier
 
-<div align="center">
+<p align="center">
   <strong>Transform short prompts into detailed, structured instructions using RAG</strong>
-</div>
+</p>
 
 <p align="center">
   <a href="https://pypi.org/project/prompt-amplifier/">
-    <img src="https://badge.fury.io/py/prompt-amplifier.svg" alt="PyPI version">
+    <img src="https://img.shields.io/pypi/v/prompt-amplifier.svg" alt="PyPI version">
   </a>
-  <a href="https://www.python.org/downloads/">
-    <img src="https://img.shields.io/badge/python-3.9+-blue.svg" alt="Python 3.9+">
+  <a href="https://pypi.org/project/prompt-amplifier/">
+    <img src="https://img.shields.io/pypi/pyversions/prompt-amplifier.svg" alt="Python versions">
   </a>
-  <a href="https://opensource.org/licenses/Apache-2.0">
-    <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License">
-  </a>
-  <a href="https://github.com/DeccanX/Prompt-Amplifier/actions">
-    <img src="https://github.com/DeccanX/Prompt-Amplifier/workflows/CI/badge.svg" alt="CI Status">
+  <a href="https://github.com/DeccanX/Prompt-Amplifier/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License">
   </a>
 </p>
 
@@ -23,213 +20,213 @@
 
 ## What is Prompt Amplifier?
 
-**Prompt Amplifier** is a Python library for **Prompt Amplification** — the process of transforming short, ambiguous user intents into comprehensive, well-structured prompts that LLMs can execute effectively.
+**Prompt Amplifier** is a Python library that transforms brief user inputs into comprehensive, well-structured prompts using Retrieval-Augmented Generation (RAG).
 
-### The Problem
+Instead of manually crafting detailed prompts, you can:
 
-When users interact with LLMs, they often provide vague, incomplete prompts:
+1. **Load your domain knowledge** (documents, web pages, videos)
+2. **Write a simple prompt** ("How's the deal going?")
+3. **Get a detailed prompt** with relevant context, structure, and instructions
 
-> *"How's the deal going?"*
+---
 
-LLMs struggle to provide useful responses without context about what "deal" means, what metrics matter, or what format the response should take.
-
-### The Solution
-
-Prompt Amplifier uses **Retrieval-Augmented Generation (RAG)** to:
-
-1. 📚 **Retrieve** relevant context from your knowledge base
-2. 🔍 **Understand** the user's intent
-3. ✨ **Generate** a detailed, structured prompt
+## Quick Example
 
 ```python
 from prompt_amplifier import PromptForge
 
+# Initialize with your documents
 forge = PromptForge()
-forge.add_texts([
-    "POC Health: Healthy means all milestones on track.",
-    "Key metrics: Winscore 0-100, Feature fit %, Engagement score.",
-])
+forge.load_documents("./sales_data/")
 
-# Short, vague input
+# Transform a simple prompt
 result = forge.expand("How's the deal going?")
+
 print(result.prompt)
 ```
 
 **Output:**
-```markdown
-**GOAL:** Generate a Deal Health Assessment report
 
-**REQUIRED SECTIONS:**
-1. Executive Summary - Overall health status (Healthy/Warning/Critical)
-2. Key Metrics Table
-   | Metric | Current | Target | Status |
-   |--------|---------|--------|--------|
-   | Winscore | ... | 80+ | ... |
-   | Feature Fit | ... | 90%+ | ... |
-3. Risk Factors
-4. Recommended Actions
+```markdown
+**GOAL:** Provide a comprehensive analysis of the current deal health status.
+
+**CONTEXT:**
+Based on the POC tracking data, analyze:
+- Current POC health status (Healthy/At Risk/Critical)
+- Milestone completion percentage
+- Winscore trends
+- Feature fit analysis
+
+**SECTIONS:**
+1. Executive Summary
+2. POC Health Assessment
+3. Key Metrics Analysis
+4. Risk Factors
+5. Recommendations
 
 **INSTRUCTIONS:**
-- Use data from Deal Profile and Success Plan
-- Assess POC health based on milestone completion
-...
+- Use specific data points from the context
+- Include quantitative metrics where available
+- Highlight any concerns or blockers
+- Format numbers consistently
 ```
 
 ---
 
 ## Key Features
 
-<div class="grid cards" markdown>
+### 📥 Multi-Format Document Loading
+Load data from 10+ formats including PDF, DOCX, CSV, JSON, Web Pages, YouTube, RSS feeds, and more.
 
-- :material-file-document-multiple: **Multi-format Document Loading**
-  
-    Load PDF, DOCX, Excel, CSV, TXT, JSON files seamlessly
+### 🔢 Flexible Embedding Strategies
+Choose from 12+ embedding providers:
+- **Free/Local**: TF-IDF, BM25, Sentence Transformers, FastEmbed
+- **Cloud APIs**: OpenAI, Google, Cohere, Voyage, Jina, Mistral
 
-- :material-vector-point: **Pluggable Embedders**
-  
-    TF-IDF, BM25, Sentence Transformers, OpenAI, Google
+### 💾 Vector Store Integration
+Persist your embeddings with ChromaDB, FAISS, or in-memory storage.
 
-- :material-database: **Vector Store Support**
-  
-    In-memory, ChromaDB, FAISS for persistent storage
+### 🤖 Multiple LLM Backends
+Generate with OpenAI, Anthropic, Google, Ollama (local), Mistral, or Together AI.
 
-- :material-magnify: **Smart Retrieval**
-  
-    Vector search, hybrid (BM25 + Vector), MMR
+### 📊 Built-in Evaluation
+Measure prompt quality, compare embedders, and benchmark generators.
 
-- :material-robot: **Multiple LLM Backends**
-  
-    OpenAI, Anthropic Claude, Google Gemini
-
-- :material-puzzle: **Fully Extensible**
-  
-    Easy to add custom loaders, embedders, and stores
-
-</div>
+### 💻 CLI Tool
+Expand prompts directly from the command line.
 
 ---
 
-## Quick Start
-
-### Installation
+## Installation
 
 ```bash
+# Basic installation
 pip install prompt-amplifier
+
+# With all features
+pip install prompt-amplifier[all]
+
+# Specific features
+pip install prompt-amplifier[embeddings-openai,generators-anthropic]
 ```
 
-### Basic Usage
+---
 
-```python
-from prompt_amplifier import PromptForge
+## Use Cases
 
-# Initialize
-forge = PromptForge()
+### 🎯 Sales Intelligence
+Transform "How's the deal?" into comprehensive deal health reports.
 
-# Add your knowledge base
-forge.add_texts([
-    "Customer satisfaction rate is 4.5/5 stars.",
-    "Sales increased 15% this quarter.",
-    "New product launch exceeded expectations.",
-])
+### 📚 Research Assistant
+Convert "Summarize this paper" into structured research summaries.
 
-# Expand a short prompt
-result = forge.expand("Summarize performance")
+### 🎧 Customer Support
+Turn "Help with billing" into detailed troubleshooting guides.
 
-print(result.prompt)
-print(f"Expansion: {result.expansion_ratio:.1f}x")
-```
-
-### With Persistent Storage
-
-```python
-from prompt_amplifier import PromptForge
-from prompt_amplifier.vectorstores import ChromaStore
-from prompt_amplifier.embedders import SentenceTransformerEmbedder
-
-forge = PromptForge(
-    embedder=SentenceTransformerEmbedder(),
-    vectorstore=ChromaStore(
-        collection_name="my_docs",
-        persist_directory="./db"
-    )
-)
-
-# Load once, use forever
-forge.load_documents("./docs/")
-result = forge.expand("Project status")
-```
+### 📝 Content Creation
+Expand "Write about AI" into well-researched, structured articles.
 
 ---
 
 ## Architecture
 
-```mermaid
-graph LR
-    A[User Prompt] --> B[Embedder]
-    B --> C[Vector Store]
-    C --> D[Retriever]
-    D --> E[Context]
-    E --> F[LLM Generator]
-    F --> G[Expanded Prompt]
-    
-    H[Documents] --> I[Chunker]
-    I --> J[Embedder]
-    J --> C
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        PromptForge                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────┐   ┌─────────┐   ┌──────────┐   ┌───────────┐  │
+│  │ Loaders │ → │Chunkers │ → │Embedders │ → │VectorStore│  │
+│  └─────────┘   └─────────┘   └──────────┘   └───────────┘  │
+│       ↓                                           ↓        │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │                    Retriever                        │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                           ↓                                │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │                    Generator                        │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                           ↓                                │
+│                    Expanded Prompt                         │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Comparison
+## Supported Integrations
 
-| Feature | Prompt Amplifier | LangChain | LlamaIndex |
-|---------|-----------------|-----------|------------|
-| **Focus** | Prompt expansion | General chains | Data indexing |
-| **Complexity** | Simple API | Complex | Moderate |
-| **Dependencies** | Minimal | Heavy | Heavy |
-| **Learning Curve** | Low | High | Medium |
-| **Use Case** | Prompt engineering | Everything | RAG/Search |
-
----
-
-## Who Should Use This?
-
-- 🏢 **Enterprise Teams** building internal AI tools
-- 🔬 **Researchers** studying prompt engineering
-- 👨‍💻 **Developers** creating chatbots and assistants
-- 📊 **Analysts** automating report generation
+| Category | Integrations |
+|----------|-------------|
+| **Loaders** | TXT, CSV, JSON, DOCX, Excel, PDF, Web, YouTube, Sitemap, RSS |
+| **Embedders** | TF-IDF, BM25, Sentence Transformers, FastEmbed, OpenAI, Google, Cohere, Voyage, Jina, Mistral |
+| **Vector Stores** | Memory, ChromaDB, FAISS |
+| **Generators** | OpenAI, Anthropic, Google, Ollama, Mistral, Together AI |
 
 ---
 
-## Next Steps
+## What's New in v0.2.0
+
+- 🌐 **Web Loaders**: WebLoader, YouTubeLoader, SitemapLoader, RSSLoader
+- 🔢 **New Embedders**: Cohere, Voyage, Jina, Mistral
+- 🤖 **New Generators**: Ollama, Mistral, Together AI
+- 📊 **Evaluation Module**: Quality metrics, benchmarking, test suites
+- 💻 **CLI Tool**: Command-line interface
+
+[See full changelog →](changelog.md)
+
+---
+
+## Getting Started
 
 <div class="grid cards" markdown>
 
-- :material-rocket-launch: **[Quick Start Guide](getting-started/quickstart.md)**
-  
+-   :material-download:{ .lg .middle } **Installation**
+
+    ---
+
+    Install Prompt Amplifier and its dependencies
+
+    [:octicons-arrow-right-24: Installation Guide](getting-started/installation.md)
+
+-   :material-rocket-launch:{ .lg .middle } **Quick Start**
+
+    ---
+
     Get up and running in 5 minutes
 
-- :material-book-open-variant: **[User Guide](guide/concepts.md)**
-  
-    Learn the core concepts
+    [:octicons-arrow-right-24: Quick Start](getting-started/quickstart.md)
 
-- :material-code-tags: **[API Reference](api/promptforge.md)**
-  
+-   :material-book-open-variant:{ .lg .middle } **User Guide**
+
+    ---
+
+    Deep dive into all features
+
+    [:octicons-arrow-right-24: User Guide](guide/concepts.md)
+
+-   :material-api:{ .lg .middle } **API Reference**
+
+    ---
+
     Detailed API documentation
 
-- :material-school: **[Tutorials](tutorials/sales-intelligence.md)**
-  
-    Real-world examples
+    [:octicons-arrow-right-24: API Reference](api/promptforge.md)
 
 </div>
+
+---
+
+## Community
+
+- 📦 [PyPI Package](https://pypi.org/project/prompt-amplifier/)
+- 🐙 [GitHub Repository](https://github.com/DeccanX/Prompt-Amplifier)
+- 🐛 [Issue Tracker](https://github.com/DeccanX/Prompt-Amplifier/issues)
+- 📄 [License (Apache 2.0)](https://github.com/DeccanX/Prompt-Amplifier/blob/main/LICENSE)
 
 ---
 
 ## License
 
-Apache 2.0 - See [LICENSE](https://github.com/DeccanX/Prompt-Amplifier/blob/main/LICENSE) for details.
+Prompt Amplifier is released under the [Apache 2.0 License](https://github.com/DeccanX/Prompt-Amplifier/blob/main/LICENSE).
 
----
-
-<div align="center">
-  <strong>Made with ❤️ by Rajesh More for the AI community</strong>
-</div>
+Copyright © 2024 Rajesh More

@@ -94,10 +94,15 @@ nav:
   - User Guide:
     - Core Concepts: guide/concepts.md
     - Document Loading: guide/loaders.md
+    - Web Loaders: guide/web-loaders.md
     - Embedders: guide/embedders.md
+    - Additional Embedders: guide/new-embedders.md
     - Vector Stores: guide/vectorstores.md
     - Retrieval: guide/retrieval.md
     - LLM Generators: guide/generators.md
+    - Additional Generators: guide/new-generators.md
+    - Evaluation Metrics: guide/evaluation.md
+    - CLI Tool: guide/cli.md
   - Tutorials:
     - Sales Intelligence: tutorials/sales-intelligence.md
     - Research Assistant: tutorials/research-assistant.md
@@ -107,6 +112,7 @@ nav:
     - Embedders: api/embedders.md
     - Vector Stores: api/vectorstores.md
     - Generators: api/generators.md
+    - Evaluation: api/evaluation.md
     - Models: api/models.md
   - Examples: examples.md
   - Contributing: contributing.md
