@@ -1,4 +1,11 @@
-# Prompt Amplifier 🔨
+
+<h1 align="center">Prompt Amplifier</h1>
+
+<!-- Center-align the logo and set its size -->
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/969c98f9-364c-4db7-a13a-9d8777a6686f" />
+" alt="Prompt Amplifier Logo" width="800" height="400"/>
+</p>
 
 **Transform short prompts into detailed, structured instructions using context-aware retrieval.**
 
