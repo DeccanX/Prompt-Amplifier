@@ -1,14 +1,17 @@
 """Pytest fixtures and configuration."""
 
-import pytest
-import tempfile
+from __future__ import annotations
+
 import os
+import tempfile
 from pathlib import Path
 
-from prompt_amplifier.models.document import Document, Chunk
+import pytest
 
+from prompt_amplifier.models.document import Chunk, Document
 
 # === Sample Data Fixtures ===
+
 
 @pytest.fixture
 def sample_texts():
@@ -82,6 +85,7 @@ def sample_chunks(sample_document):
 
 # === File Fixtures ===
 
+
 @pytest.fixture
 def temp_dir():
     """Create a temporary directory for test files."""
@@ -109,6 +113,7 @@ def temp_csv_file(temp_dir):
 def temp_json_file(temp_dir):
     """Create a temporary JSON file."""
     import json
+
     file_path = temp_dir / "test.json"
     data = [
         {"title": "Doc 1", "content": "Content one"},
@@ -119,6 +124,7 @@ def temp_json_file(temp_dir):
 
 
 # === Environment Fixtures ===
+
 
 @pytest.fixture
 def has_openai_key():
@@ -134,10 +140,12 @@ def has_anthropic_key():
 
 # === Embedder Fixtures ===
 
+
 @pytest.fixture
 def tfidf_embedder():
     """TF-IDF embedder (always available)."""
     from prompt_amplifier.embedders import TFIDFEmbedder
+
     return TFIDFEmbedder(max_features=1000)
 
 
@@ -150,10 +158,12 @@ def fitted_tfidf_embedder(tfidf_embedder, sample_texts):
 
 # === Vector Store Fixtures ===
 
+
 @pytest.fixture
 def memory_store():
     """In-memory vector store."""
     from prompt_amplifier.vectorstores import MemoryStore
+
     return MemoryStore(collection_name="test")
 
 
@@ -165,4 +175,3 @@ def populated_memory_store(memory_store, sample_chunks, fitted_tfidf_embedder):
     # Add to store
     memory_store.add(sample_chunks)
     return memory_store
-

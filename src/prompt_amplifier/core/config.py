@@ -2,23 +2,23 @@
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 from typing import Any, Literal, Optional
-import os
 
 
 @dataclass
 class ChunkerConfig:
     """Configuration for text chunking."""
-    
+
     strategy: Literal["fixed", "sentence", "paragraph", "recursive", "semantic"] = "recursive"
     chunk_size: int = 1000  # characters
     chunk_overlap: int = 200  # characters
-    
+
     # For sentence/paragraph chunking
     min_chunk_size: int = 100
     max_chunk_size: int = 2000
-    
+
     # For semantic chunking
     semantic_threshold: float = 0.5
 
@@ -26,26 +26,28 @@ class ChunkerConfig:
 @dataclass
 class EmbedderConfig:
     """Configuration for embedding generation."""
-    
-    provider: Literal["tfidf", "bm25", "sentence-transformers", "openai", "cohere", "google"] = "tfidf"
+
+    provider: Literal["tfidf", "bm25", "sentence-transformers", "openai", "cohere", "google"] = (
+        "tfidf"
+    )
     model: str = ""  # Model name (provider-specific)
-    
+
     # API settings
     api_key: Optional[str] = None
     batch_size: int = 100
-    
+
     # For TF-IDF/BM25
     max_features: int = 50000
     ngram_range: tuple[int, int] = (1, 2)
-    
+
     def __post_init__(self) -> None:
         """Set default models and load API keys from environment."""
         if not self.model:
             self.model = self._default_model()
-        
+
         if not self.api_key:
             self.api_key = self._load_api_key()
-    
+
     def _default_model(self) -> str:
         """Get default model for provider."""
         defaults = {
@@ -57,7 +59,7 @@ class EmbedderConfig:
             "google": "text-embedding-004",
         }
         return defaults.get(self.provider, "")
-    
+
     def _load_api_key(self) -> Optional[str]:
         """Load API key from environment variable."""
         env_vars = {
@@ -72,27 +74,29 @@ class EmbedderConfig:
 @dataclass
 class VectorStoreConfig:
     """Configuration for vector storage."""
-    
-    provider: Literal["memory", "chroma", "faiss", "lancedb", "pinecone", "qdrant", "weaviate"] = "memory"
-    
+
+    provider: Literal["memory", "chroma", "faiss", "lancedb", "pinecone", "qdrant", "weaviate"] = (
+        "memory"
+    )
+
     # Persistence
     persist_directory: Optional[str] = None
     collection_name: str = "prompt_amplifier"
-    
+
     # Cloud settings
     api_key: Optional[str] = None
     environment: Optional[str] = None  # For Pinecone
     url: Optional[str] = None  # For Qdrant cloud, Weaviate
-    
+
     # Index settings
     index_type: str = "flat"  # For FAISS: flat, ivf, hnsw
     metric: Literal["cosine", "euclidean", "dot"] = "cosine"
-    
+
     def __post_init__(self) -> None:
         """Load API keys from environment."""
         if not self.api_key:
             self.api_key = self._load_api_key()
-    
+
     def _load_api_key(self) -> Optional[str]:
         """Load API key from environment variable."""
         env_vars = {
@@ -107,17 +111,17 @@ class VectorStoreConfig:
 @dataclass
 class RetrieverConfig:
     """Configuration for retrieval."""
-    
+
     strategy: Literal["vector", "keyword", "hybrid", "mmr"] = "vector"
     top_k: int = 10
-    
+
     # For hybrid search
     keyword_weight: float = 0.3
     vector_weight: float = 0.7
-    
+
     # For MMR (Maximal Marginal Relevance)
     mmr_lambda: float = 0.5  # Balance between relevance and diversity
-    
+
     # Reranking
     use_reranker: bool = False
     reranker_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
@@ -127,30 +131,30 @@ class RetrieverConfig:
 @dataclass
 class GeneratorConfig:
     """Configuration for LLM generation."""
-    
+
     provider: Literal["openai", "anthropic", "google", "ollama", "huggingface"] = "openai"
     model: str = ""
-    
+
     # API settings
     api_key: Optional[str] = None
     base_url: Optional[str] = None  # For Ollama, custom endpoints
-    
+
     # Generation parameters
     temperature: float = 0.7
     max_tokens: int = 2000
     top_p: float = 1.0
-    
+
     # System prompt
     system_prompt: Optional[str] = None
-    
+
     def __post_init__(self) -> None:
         """Set default models and load API keys."""
         if not self.model:
             self.model = self._default_model()
-        
+
         if not self.api_key:
             self.api_key = self._load_api_key()
-    
+
     def _default_model(self) -> str:
         """Get default model for provider."""
         defaults = {
@@ -161,7 +165,7 @@ class GeneratorConfig:
             "huggingface": "meta-llama/Llama-3.2-3B-Instruct",
         }
         return defaults.get(self.provider, "")
-    
+
     def _load_api_key(self) -> Optional[str]:
         """Load API key from environment variable."""
         env_vars = {
@@ -177,7 +181,7 @@ class GeneratorConfig:
 class PromptForgeConfig:
     """
     Main configuration for PromptForge.
-    
+
     Example:
         >>> config = PromptForgeConfig(
         ...     embedder=EmbedderConfig(provider="openai"),
@@ -186,22 +190,22 @@ class PromptForgeConfig:
         ... )
         >>> forge = PromptForge(config=config)
     """
-    
+
     chunker: ChunkerConfig = field(default_factory=ChunkerConfig)
     embedder: EmbedderConfig = field(default_factory=EmbedderConfig)
     vectorstore: VectorStoreConfig = field(default_factory=VectorStoreConfig)
     retriever: RetrieverConfig = field(default_factory=RetrieverConfig)
     generator: GeneratorConfig = field(default_factory=GeneratorConfig)
-    
+
     # Schema path (optional)
     schema_path: Optional[str] = None
-    
+
     # Logging
     verbose: bool = False
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
-    
+
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "PromptForgeConfig":
+    def from_dict(cls, data: dict[str, Any]) -> PromptForgeConfig:
         """Create config from dictionary."""
         return cls(
             chunker=ChunkerConfig(**data.get("chunker", {})),
@@ -213,17 +217,18 @@ class PromptForgeConfig:
             verbose=data.get("verbose", False),
             log_level=data.get("log_level", "INFO"),
         )
-    
+
     @classmethod
-    def from_yaml(cls, path: str) -> "PromptForgeConfig":
+    def from_yaml(cls, path: str) -> PromptForgeConfig:
         """Load config from YAML file."""
         import yaml
-        with open(path, "r") as f:
+
+        with open(path) as f:
             data = yaml.safe_load(f)
         return cls.from_dict(data)
-    
+
     def to_dict(self) -> dict[str, Any]:
         """Convert config to dictionary."""
         from dataclasses import asdict
-        return asdict(self)
 
+        return asdict(self)

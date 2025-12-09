@@ -6,20 +6,20 @@ import json
 from pathlib import Path
 from typing import Any
 
+from prompt_amplifier.core.exceptions import LoaderError
 from prompt_amplifier.loaders.base import BaseLoader
 from prompt_amplifier.models.document import Document
-from prompt_amplifier.core.exceptions import LoaderError
 
 
 class JSONLoader(BaseLoader):
     """
     Load JSON files as documents.
-    
+
     Example:
         >>> loader = JSONLoader(jq_filter=".data[]")
         >>> docs = loader.load("data.json")
     """
-    
+
     def __init__(
         self,
         encoding: str = "utf-8",
@@ -30,7 +30,7 @@ class JSONLoader(BaseLoader):
     ):
         """
         Initialize JSON loader.
-        
+
         Args:
             encoding: File encoding
             content_key: Key to extract as content (uses entire JSON if None)
@@ -42,24 +42,24 @@ class JSONLoader(BaseLoader):
         self.content_key = content_key
         self.metadata_keys = metadata_keys or []
         self.flatten = flatten
-    
+
     def load(self, source: str | Path) -> list[Document]:
         """Load a JSON file."""
         path = Path(source)
-        
+
         if not path.exists():
             raise LoaderError(f"File not found: {source}")
-        
+
         try:
-            with open(path, "r", encoding=self.encoding) as f:
+            with open(path, encoding=self.encoding) as f:
                 data = json.load(f)
         except json.JSONDecodeError as e:
             raise LoaderError(f"Invalid JSON in {source}: {e}")
         except Exception as e:
             raise LoaderError(f"Failed to read {source}: {e}")
-        
+
         return self._process_data(data, source)
-    
+
     def _process_data(self, data: Any, source: str | Path) -> list[Document]:
         """Process JSON data into documents."""
         # Handle list of objects
@@ -70,20 +70,22 @@ class JSONLoader(BaseLoader):
                 if doc:
                     documents.append(doc)
             return documents
-        
+
         # Handle single object
         elif isinstance(data, dict):
             doc = self._item_to_document(data, source)
             return [doc] if doc else []
-        
+
         # Handle primitive
         else:
-            return [self._create_document(
-                content=str(data),
-                source=source,
-                source_type="json",
-            )]
-    
+            return [
+                self._create_document(
+                    content=str(data),
+                    source=source,
+                    source_type="json",
+                )
+            ]
+
     def _item_to_document(
         self,
         item: dict,
@@ -101,26 +103,26 @@ class JSONLoader(BaseLoader):
                 content = self._flatten_dict(item)
             else:
                 content = json.dumps(item, indent=2, ensure_ascii=False)
-        
+
         if not content.strip():
             return None
-        
+
         # Extract metadata
         metadata: dict[str, Any] = {}
         if index is not None:
             metadata["index"] = index
-        
+
         for key in self.metadata_keys:
             if isinstance(item, dict) and key in item:
                 metadata[key] = item[key]
-        
+
         return self._create_document(
             content=content,
             source=source,
             source_type="json",
             metadata=metadata,
         )
-    
+
     def _flatten_dict(self, d: dict, parent_key: str = "", sep: str = ".") -> str:
         """Flatten nested dict to string."""
         items = []
@@ -133,8 +135,7 @@ class JSONLoader(BaseLoader):
             else:
                 items.append(f"{new_key}: {v}")
         return "\n".join(items)
-    
+
     @property
     def supported_extensions(self) -> list[str]:
         return [".json", ".jsonl"]
-

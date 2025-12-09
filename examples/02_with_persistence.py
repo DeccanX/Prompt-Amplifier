@@ -41,13 +41,14 @@ forge = PromptForge(config=config)
 # Check if we already have data
 if forge.chunk_count == 0:
     print("📂 First run: Loading documents...")
-    
+
     # Create sample documents
     docs_dir = Path("./sample_docs")
     docs_dir.mkdir(exist_ok=True)
-    
+
     # Create a sample file
-    (docs_dir / "guidelines.txt").write_text("""
+    (docs_dir / "guidelines.txt").write_text(
+        """
     POC Evaluation Guidelines
     ========================
     
@@ -62,9 +63,11 @@ if forge.chunk_count == 0:
     - POC Duration (weeks)
     - Success Criteria
     - Current Status
-    """)
-    
-    (docs_dir / "metrics.txt").write_text("""
+    """
+    )
+
+    (docs_dir / "metrics.txt").write_text(
+        """
     Key Performance Metrics
     ======================
     
@@ -77,12 +80,13 @@ if forge.chunk_count == 0:
     Feature Fit: Percentage of required features available
     
     Engagement Score: Customer interaction frequency and quality
-    """)
-    
+    """
+    )
+
     # Load documents
     forge.load_documents(str(docs_dir))
     print(f"✅ Loaded {forge.document_count} documents, {forge.chunk_count} chunks")
-    
+
 else:
     print(f"📂 Using existing data: {forge.chunk_count} chunks loaded from ChromaDB")
 
@@ -100,4 +104,3 @@ print(f"  - Context chunks used: {result.context_count}")
 print(f"  - Retrieval time: {result.retrieval_time_ms:.0f}ms")
 print(f"  - Generation time: {result.generation_time_ms:.0f}ms")
 print(f"  - Expansion ratio: {result.expansion_ratio:.1f}x")
-

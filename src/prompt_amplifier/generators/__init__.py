@@ -1,5 +1,7 @@
 """LLM generators for prompt expansion."""
 
+from __future__ import annotations
+
 from prompt_amplifier.generators.base import BaseGenerator, GenerationResult
 
 __all__ = [
@@ -10,18 +12,21 @@ __all__ = [
 # Optional generators
 try:
     from prompt_amplifier.generators.openai import OpenAIGenerator
+
     __all__.append("OpenAIGenerator")
 except ImportError:
     pass
 
 try:
     from prompt_amplifier.generators.openai import AnthropicGenerator
+
     __all__.append("AnthropicGenerator")
 except ImportError:
     pass
 
 try:
     from prompt_amplifier.generators.openai import GeminiGenerator
+
     __all__.append("GeminiGenerator")
 except ImportError:
     pass

@@ -6,7 +6,7 @@ short prompts into detailed, structured instructions.
 
 Requirements:
     pip install prompt_amplifier
-    
+
 For full expansion (with LLM):
     export OPENAI_API_KEY="your-key"
 """
@@ -50,7 +50,7 @@ sample_docs = [
     3. Business Validation - ROI and stakeholder alignment
     4. Negotiation - Contract and pricing
     5. Closed Won/Lost
-    """
+    """,
 ]
 
 # Add texts directly
@@ -106,12 +106,11 @@ queries = [
 for query in queries:
     search_results = forge.search(query, top_k=2)
     print(f"\nQuery: '{query}'")
-    
+
     for i, r in enumerate(search_results, 1):
-        preview = r.content[:80].replace('\n', ' ').strip()
+        preview = r.content[:80].replace("\n", " ").strip()
         print(f"  {i}. [{r.score:.3f}] {preview}...")
 
 print("\n" + "=" * 60)
 print("Demo complete!")
 print("=" * 60)
-
