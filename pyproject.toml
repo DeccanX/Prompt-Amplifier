@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "prompt-amplifier"
-version = "0.1.5"
+version = "0.2.0"
 description = "Transform short prompts into detailed, structured instructions using context-aware retrieval"
 readme = "README.md"
 license = {text = "Apache-2.0"}
@@ -56,6 +56,21 @@ loaders = [
     "markdown>=3.3.0",
 ]
 
+# Web loaders
+loaders-web = [
+    "requests>=2.28.0",
+    "beautifulsoup4>=4.9.0",
+    "lxml>=4.9.0",
+]
+
+loaders-youtube = [
+    "youtube-transcript-api>=0.6.0",
+]
+
+loaders-rss = [
+    "feedparser>=6.0.0",
+]
+
 # Embedding providers
 embeddings-local = [
     "sentence-transformers>=2.2.0",
@@ -67,7 +82,19 @@ embeddings-openai = [
 ]
 
 embeddings-cohere = [
-    "cohere>=4.0.0",
+    "cohere>=5.0.0",
+]
+
+embeddings-voyage = [
+    "voyageai>=0.2.0",
+]
+
+embeddings-jina = [
+    "requests>=2.28.0",
+]
+
+embeddings-mistral = [
+    "mistralai>=0.1.0",
 ]
 
 embeddings-google = [
@@ -115,6 +142,14 @@ generators-google = [
 
 generators-ollama = [
     "ollama>=0.1.0",
+]
+
+generators-mistral = [
+    "mistralai>=0.1.0",
+]
+
+generators-together = [
+    "requests>=2.28.0",
 ]
 
 # Development

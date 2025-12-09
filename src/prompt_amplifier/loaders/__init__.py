@@ -39,3 +39,33 @@ try:
     __all__.append("PDFLoader")
 except ImportError:
     pass
+
+# Web loaders (require requests, beautifulsoup4)
+try:
+    from prompt_amplifier.loaders.web import WebLoader
+
+    __all__.append("WebLoader")
+except ImportError:
+    pass
+
+try:
+    from prompt_amplifier.loaders.web import SitemapLoader
+
+    __all__.append("SitemapLoader")
+except ImportError:
+    pass
+
+try:
+    from prompt_amplifier.loaders.web import RSSLoader
+
+    __all__.append("RSSLoader")
+except ImportError:
+    pass
+
+# YouTube loader (requires youtube-transcript-api)
+try:
+    from prompt_amplifier.loaders.web import YouTubeLoader
+
+    __all__.append("YouTubeLoader")
+except ImportError:
+    pass

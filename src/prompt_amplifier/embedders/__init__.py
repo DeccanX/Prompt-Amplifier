@@ -46,9 +46,40 @@ except ImportError:
 
 # Optional embedders - Cohere
 try:
-    from prompt_amplifier.embedders.openai import CohereEmbedder
+    from prompt_amplifier.embedders.cohere import CohereEmbedder
 
     __all__.append("CohereEmbedder")
+except ImportError:
+    pass
+
+try:
+    from prompt_amplifier.embedders.cohere import CohereRerankEmbedder
+
+    __all__.append("CohereRerankEmbedder")
+except ImportError:
+    pass
+
+# Optional embedders - Voyage AI
+try:
+    from prompt_amplifier.embedders.voyage import VoyageEmbedder
+
+    __all__.append("VoyageEmbedder")
+except ImportError:
+    pass
+
+# Optional embedders - Jina AI
+try:
+    from prompt_amplifier.embedders.voyage import JinaEmbedder
+
+    __all__.append("JinaEmbedder")
+except ImportError:
+    pass
+
+# Optional embedders - Mistral AI
+try:
+    from prompt_amplifier.embedders.voyage import MistralEmbedder
+
+    __all__.append("MistralEmbedder")
 except ImportError:
     pass
 
