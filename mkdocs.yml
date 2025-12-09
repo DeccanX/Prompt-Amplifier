@@ -1,23 +1,26 @@
 site_name: Prompt Amplifier
-site_description: Transform short prompts into detailed, structured instructions
+site_description: Transform short prompts into detailed, structured instructions using RAG
 site_author: Rajesh More
 site_url: https://deccanx.github.io/Prompt-Amplifier/
 
 repo_name: DeccanX/Prompt-Amplifier
 repo_url: https://github.com/DeccanX/Prompt-Amplifier
+edit_uri: edit/main/docs/
+
+copyright: Copyright &copy; 2024 Rajesh More
 
 theme:
   name: material
   palette:
     - scheme: default
-      primary: indigo
-      accent: indigo
+      primary: deep purple
+      accent: amber
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: deep purple
+      accent: amber
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -25,11 +28,20 @@ theme:
     - navigation.instant
     - navigation.tracking
     - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
     - navigation.expand
+    - navigation.top
+    - navigation.footer
     - toc.follow
+    - toc.integrate
     - content.code.copy
     - content.code.annotate
+    - content.tabs.link
+    - search.suggest
+    - search.highlight
+  icon:
+    repo: fontawesome/brands/github
 
 plugins:
   - search
@@ -39,33 +51,66 @@ plugins:
           options:
             show_source: true
             show_root_heading: true
+            heading_level: 2
 
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - pymdownx.superfences
-  - admonition
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.details
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - admonition
   - attr_list
   - md_in_html
   - tables
+  - footnotes
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 nav:
   - Home: index.md
   - Getting Started:
     - Installation: getting-started/installation.md
     - Quick Start: getting-started/quickstart.md
+    - Configuration: getting-started/configuration.md
   - User Guide:
+    - Core Concepts: guide/concepts.md
+    - Document Loading: guide/loaders.md
     - Embedders: guide/embedders.md
     - Vector Stores: guide/vectorstores.md
-    - Generators: guide/generators.md
+    - Retrieval: guide/retrieval.md
+    - LLM Generators: guide/generators.md
+  - Tutorials:
+    - Sales Intelligence: tutorials/sales-intelligence.md
+    - Research Assistant: tutorials/research-assistant.md
+    - Customer Support: tutorials/customer-support.md
   - API Reference:
     - PromptForge: api/promptforge.md
     - Embedders: api/embedders.md
     - Vector Stores: api/vectorstores.md
+    - Generators: api/generators.md
+    - Models: api/models.md
   - Examples: examples.md
+  - Contributing: contributing.md
+  - Changelog: changelog.md
 
 extra:
   social:
@@ -73,4 +118,11 @@ extra:
       link: https://github.com/DeccanX/Prompt-Amplifier
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/prompt-amplifier/
+  analytics:
+    provider: google
+    property: G-XXXXXXXXXX
+  version:
+    provider: mike
 
+extra_css:
+  - stylesheets/extra.css
