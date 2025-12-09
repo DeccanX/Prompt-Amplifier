@@ -1,0 +1,99 @@
+{
+  "timestamp": "2025-12-09T22:16:50.606083",
+  "embedder_results": [
+    {
+      "name": "TF-IDF",
+      "embed_time_ms": 3.1,
+      "query_time_ms": 0.11,
+      "dimension": 431,
+      "precision_at_5": 0.45,
+      "mrr": 0.52,
+      "quality_score": 0.62,
+      "error": null
+    },
+    {
+      "name": "BM25",
+      "embed_time_ms": 1.6,
+      "query_time_ms": 0.02,
+      "dimension": 15,
+      "precision_at_5": 0.52,
+      "mrr": 0.59,
+      "quality_score": 0.65,
+      "error": null
+    },
+    {
+      "name": "SBERT-MiniLM",
+      "embed_time_ms": 6301.5,
+      "query_time_ms": 35.1,
+      "dimension": 384,
+      "precision_at_5": 0.71,
+      "mrr": 0.75,
+      "quality_score": 0.78,
+      "error": null
+    },
+    {
+      "name": "OpenAI-3-small",
+      "embed_time_ms": 2126.5,
+      "query_time_ms": 1088.3,
+      "dimension": 1536,
+      "precision_at_5": 0.78,
+      "mrr": 0.83,
+      "quality_score": 0.83,
+      "error": null
+    },
+    {
+      "name": "Google-embed",
+      "embed_time_ms": 1518.2,
+      "query_time_ms": 234.2,
+      "dimension": 768,
+      "precision_at_5": 0.76,
+      "mrr": 0.81,
+      "quality_score": 0.81,
+      "error": null
+    }
+  ],
+  "generator_results": [
+    {
+      "name": "OpenAI",
+      "model": "gpt-4o-mini",
+      "avg_time_ms": 11253.0,
+      "avg_quality": 0.585,
+      "avg_expansion_ratio": 95.8,
+      "structure_score": 0.13,
+      "specificity_score": 0.17,
+      "completeness_score": 0.2,
+      "readability_score": 1.0,
+      "sample_output": "**GOAL:**  \nProvide a comprehensive update on the status of the deal.\n\n**REQUIRED SECTIONS:**\n\n1. **Health Status**  \n   - Pull from: POC Health Status  \n   - Possible values: Healthy, At Risk, Critical  \n   - Interpretation: Summarize the current health status of the deal based on milestone tracking.\n\n2. **Feature Fit**  \n   - Pull from: Feature Fit Percentage  \n   - Interpretation: Assess how well the product meets customer requirements and categorize it as excellent, good, partial, or poor fi",
+      "error": null
+    },
+    {
+      "name": "Anthropic",
+      "model": "claude-3-haiku",
+      "avg_time_ms": 0.0,
+      "avg_quality": 0.0,
+      "avg_expansion_ratio": 0.0,
+      "structure_score": 0.0,
+      "specificity_score": 0.0,
+      "completeness_score": 0.0,
+      "readability_score": 0.0,
+      "sample_output": "",
+      "error": "cannot import name 'AnthropicGenerator' from 'prompt_amplifier.generators' (/Users/rajeshmore/Downloads/prompt_engine/promptforge/src/prompt_amplifier/generators/__init__.py)"
+    },
+    {
+      "name": "Google",
+      "model": "gemini-2.0-flash",
+      "avg_time_ms": 0.0,
+      "avg_quality": 0.0,
+      "avg_expansion_ratio": 0.0,
+      "structure_score": 0.0,
+      "specificity_score": 0.0,
+      "completeness_score": 0.0,
+      "readability_score": 0.0,
+      "sample_output": "",
+      "error": "cannot import name 'GoogleGenerator' from 'prompt_amplifier.generators' (/Users/rajeshmore/Downloads/prompt_engine/promptforge/src/prompt_amplifier/generators/__init__.py)"
+    }
+  ],
+  "ablation_chunk_size": [],
+  "ablation_top_k": [],
+  "ablation_hybrid_alpha": []
+}

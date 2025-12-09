@@ -27,8 +27,11 @@ except ImportError:
 
 # Optional generators - Google
 try:
-    from prompt_amplifier.generators.openai import GoogleGenerator
+    from prompt_amplifier.generators.openai import GeminiGenerator
+    # Alias for consistency
+    GoogleGenerator = GeminiGenerator
 
+    __all__.append("GeminiGenerator")
     __all__.append("GoogleGenerator")
 except ImportError:
     pass
