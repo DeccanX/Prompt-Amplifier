@@ -9,7 +9,7 @@ __all__ = [
     "GenerationResult",
 ]
 
-# Optional generators - OpenAI
+# OpenAI Generator
 try:
     from prompt_amplifier.generators.openai import OpenAIGenerator
 
@@ -17,26 +17,24 @@ try:
 except ImportError:
     pass
 
-# Optional generators - Anthropic
+# Anthropic Generator
 try:
-    from prompt_amplifier.generators.openai import AnthropicGenerator
+    from prompt_amplifier.generators.anthropic import AnthropicGenerator
 
     __all__.append("AnthropicGenerator")
 except ImportError:
     pass
 
-# Optional generators - Google
+# Google/Gemini Generator
 try:
-    from prompt_amplifier.generators.openai import GeminiGenerator
-    # Alias for consistency
-    GoogleGenerator = GeminiGenerator
+    from prompt_amplifier.generators.google import GoogleGenerator, GeminiGenerator
 
-    __all__.append("GeminiGenerator")
     __all__.append("GoogleGenerator")
+    __all__.append("GeminiGenerator")
 except ImportError:
     pass
 
-# Optional generators - Ollama (local)
+# Ollama Generator (local LLMs)
 try:
     from prompt_amplifier.generators.ollama import OllamaGenerator
 
@@ -44,7 +42,7 @@ try:
 except ImportError:
     pass
 
-# Optional generators - Mistral
+# Mistral Generator
 try:
     from prompt_amplifier.generators.ollama import MistralGenerator
 
@@ -52,7 +50,7 @@ try:
 except ImportError:
     pass
 
-# Optional generators - Together AI
+# Together AI Generator
 try:
     from prompt_amplifier.generators.ollama import TogetherGenerator
 

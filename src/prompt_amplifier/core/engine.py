@@ -275,7 +275,7 @@ class PromptForge:
                 max_tokens=cfg.max_tokens,
             )
         elif cfg.provider == "anthropic":
-            from prompt_amplifier.generators.openai import AnthropicGenerator
+            from prompt_amplifier.generators.anthropic import AnthropicGenerator
 
             return AnthropicGenerator(
                 model=cfg.model,
@@ -284,9 +284,9 @@ class PromptForge:
                 max_tokens=cfg.max_tokens,
             )
         elif cfg.provider == "google":
-            from prompt_amplifier.generators.openai import GeminiGenerator
+            from prompt_amplifier.generators.google import GoogleGenerator
 
-            return GeminiGenerator(
+            return GoogleGenerator(
                 model=cfg.model,
                 api_key=cfg.api_key,
                 temperature=cfg.temperature,
