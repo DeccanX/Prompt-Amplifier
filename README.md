@@ -80,23 +80,61 @@ pip install prompt-amplifier[loaders,embeddings-local,vectorstore-chroma]
 pip install prompt-amplifier[all]
 ```
 
+### API Key Setup
+
+> ⚠️ **Required for `expand()`**: The prompt expansion feature requires an LLM API key.
+
+```python
+import os
+
+# Option 1: Google Gemini (has free tier!)
+os.environ["GOOGLE_API_KEY"] = "your-key-from-aistudio.google.com"
+
+# Option 2: OpenAI
+os.environ["OPENAI_API_KEY"] = "sk-your-key"
+
+# Option 3: Anthropic
+os.environ["ANTHROPIC_API_KEY"] = "sk-ant-your-key"
+```
+
 ### Basic Usage
 
 ```python
+import os
+os.environ["GOOGLE_API_KEY"] = "your-key"  # Required for expand()
+
 from prompt_amplifier import PromptForge
+from prompt_amplifier.generators import GoogleGenerator
 
-# Initialize with defaults (TF-IDF embedder, in-memory store)
-forge = PromptForge()
+# Initialize with Google Gemini (free tier available)
+forge = PromptForge(generator=GoogleGenerator())
 
-# Load your documents
-forge.load_documents("./docs/")
+# Add your documents
+forge.add_texts([
+    "POC Health: Healthy means all milestones on track.",
+    "Winscore ranges from 0-100, measuring deal probability.",
+])
 
 # Expand a short prompt
 result = forge.expand("Give me a POC health check")
 
 print(result.prompt)      # The expanded prompt
-print(result.context)     # Retrieved context chunks
-print(result.metadata)    # Stats and metadata
+print(result.expansion_ratio)  # How much longer it got
+```
+
+### Search Without API Key
+
+```python
+from prompt_amplifier import PromptForge
+
+# No API key needed for search!
+forge = PromptForge()
+forge.add_texts(["doc1", "doc2", "doc3"])
+
+# Search works without LLM
+results = forge.search("my query")
+for r in results.results:
+    print(r.chunk.content)
 ```
 
 ### With Persistent Vector Store
