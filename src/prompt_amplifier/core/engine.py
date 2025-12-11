@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import time
 from collections.abc import Sequence
 from pathlib import Path
@@ -9,7 +10,7 @@ from typing import Any
 
 from prompt_amplifier.chunkers.base import BaseChunker
 from prompt_amplifier.core.config import PromptForgeConfig
-from prompt_amplifier.core.exceptions import ConfigurationError
+from prompt_amplifier.core.exceptions import ConfigurationError, EmbedderError
 from prompt_amplifier.embedders.base import BaseEmbedder
 from prompt_amplifier.generators.base import BaseGenerator
 from prompt_amplifier.loaders.base import BaseLoader, DirectoryLoader
@@ -17,6 +18,13 @@ from prompt_amplifier.models.document import Chunk, Document
 from prompt_amplifier.models.result import ExpandResult, SearchResults
 from prompt_amplifier.retrievers.base import BaseRetriever
 from prompt_amplifier.vectorstores.base import BaseVectorStore
+
+# Configure module logger
+logger = logging.getLogger("prompt_amplifier")
+
+# Constants for validation
+MAX_PROMPT_LENGTH = 100000
+MIN_DOCUMENTS_FOR_TFIDF = 2
 
 # Default system prompt for prompt expansion
 DEFAULT_SYSTEM_PROMPT = """You are an AI Prompt Assistant. Your job is to transform a short user intent
@@ -320,22 +328,44 @@ class PromptForge:
 
         Returns:
             Number of documents loaded
+
+        Raises:
+            ValueError: If source path doesn't exist
+            FileNotFoundError: If no documents found in directory
         """
+        # Input validation
+        if not source:
+            raise ValueError("Source path cannot be empty")
+        
         loader = loader or self.loader
         path = Path(source)
 
+        logger.info(f"Loading documents from: {path}")
+
         if path.is_dir():
             docs = loader.load(path)
+            if not docs:
+                raise FileNotFoundError(
+                    f"No documents found in directory: {path}. "
+                    f"Supported formats: .txt, .pdf, .docx, .csv, .json, .xlsx"
+                )
         elif path.is_file():
             docs = loader.load(path)
+            if not docs:
+                raise ValueError(f"Failed to load document: {path}")
         else:
-            raise ValueError(f"Source not found: {source}")
+            raise FileNotFoundError(
+                f"Source not found: {source}. "
+                f"Please provide a valid file or directory path."
+            )
 
+        logger.info(f"Loaded {len(docs)} documents")
         self._documents.extend(docs)
 
         # Chunk documents
         chunks = self.chunker.chunk_documents(docs)
         self._chunks.extend(chunks)
+        logger.debug(f"Created {len(chunks)} chunks")
 
         # Embed and store chunks
         if chunks:
@@ -360,7 +390,26 @@ class PromptForge:
 
         Returns:
             Number of chunks created
+
+        Raises:
+            ValueError: If texts is empty or contains only empty strings
         """
+        # Input validation
+        if not texts:
+            raise ValueError("texts cannot be empty")
+        
+        # Filter out empty texts
+        valid_texts = [t for t in texts if t and t.strip()]
+        if not valid_texts:
+            raise ValueError("All provided texts are empty")
+        
+        if len(valid_texts) < len(texts):
+            logger.warning(
+                f"Filtered out {len(texts) - len(valid_texts)} empty texts"
+            )
+        
+        logger.info(f"Adding {len(valid_texts)} texts from source: {source}")
+        
         docs = [
             Document(
                 content=text,
@@ -368,7 +417,7 @@ class PromptForge:
                 source_type="text",
                 metadata=metadata or {},
             )
-            for text in texts
+            for text in valid_texts
         ]
 
         self._documents.extend(docs)
@@ -376,6 +425,8 @@ class PromptForge:
         # Chunk and store
         chunks = self.chunker.chunk_documents(docs)
         self._chunks.extend(chunks)
+        
+        logger.debug(f"Created {len(chunks)} chunks from {len(docs)} documents")
 
         if chunks:
             self._embed_and_store(chunks)
@@ -388,19 +439,47 @@ class PromptForge:
         Embed chunks and add to vector store.
 
         Handles sparse embedders (TF-IDF, BM25) that need fitting.
+
+        Raises:
+            EmbedderError: If embedding fails (e.g., too few documents for TF-IDF)
         """
         from prompt_amplifier.embedders.base import BaseSparseEmbedder
+
+        logger.debug(f"Embedding {len(chunks)} chunks with {type(self.embedder).__name__}")
 
         # Check if embedder needs fitting (sparse embedders like TF-IDF)
         if isinstance(self.embedder, BaseSparseEmbedder):
             if not self.embedder.is_fitted:
                 # Fit on all chunks we have
                 all_texts = [c.content for c in self._chunks]
-                self.embedder.fit(all_texts)
+                
+                # Validate minimum documents for TF-IDF
+                if len(all_texts) < MIN_DOCUMENTS_FOR_TFIDF:
+                    raise EmbedderError(
+                        f"TF-IDF requires at least {MIN_DOCUMENTS_FOR_TFIDF} documents, "
+                        f"but only {len(all_texts)} provided. "
+                        f"Either add more documents or use a dense embedder like "
+                        f"SentenceTransformerEmbedder which works with any number of documents."
+                    )
+                
+                try:
+                    self.embedder.fit(all_texts)
+                    logger.debug(f"Fitted sparse embedder on {len(all_texts)} texts")
+                except ValueError as e:
+                    # Catch sklearn errors and provide helpful message
+                    raise EmbedderError(
+                        f"Failed to fit embedder: {e}. "
+                        f"Try adding more documents or using SentenceTransformerEmbedder."
+                    ) from e
 
         # Now embed the chunks
-        self.embedder.embed_chunks(chunks)
-        self.vectorstore.add(chunks)
+        try:
+            self.embedder.embed_chunks(chunks)
+            self.vectorstore.add(chunks)
+            logger.debug(f"Successfully stored {len(chunks)} chunks")
+        except Exception as e:
+            logger.error(f"Failed to embed/store chunks: {e}")
+            raise
 
     def expand(
         self,
@@ -418,7 +497,29 @@ class PromptForge:
 
         Returns:
             ExpandResult with the expanded prompt and metadata
+
+        Raises:
+            ValueError: If prompt is empty or too long
+            ConfigurationError: If no documents loaded and context is required
         """
+        # Input validation
+        if not short_prompt:
+            raise ValueError("Prompt cannot be empty")
+        
+        short_prompt = short_prompt.strip()
+        if not short_prompt:
+            raise ValueError("Prompt cannot be only whitespace")
+        
+        if len(short_prompt) > MAX_PROMPT_LENGTH:
+            raise ValueError(
+                f"Prompt too long: {len(short_prompt)} characters "
+                f"(maximum: {MAX_PROMPT_LENGTH})"
+            )
+
+        logger.info(f"Expanding prompt: '{short_prompt[:50]}{'...' if len(short_prompt) > 50 else ''}'")
+        logger.debug(f"Using embedder: {type(self.embedder).__name__}")
+        logger.debug(f"Using generator: {type(self.generator).__name__}")
+        
         start_time = time.time()
 
         # Retrieve relevant context
@@ -458,6 +559,12 @@ Output ONLY the detailed prompt - no explanations or meta-commentary."""
         generation_time = (time.time() - generation_start) * 1000
 
         total_time = (time.time() - start_time) * 1000
+
+        logger.info(
+            f"Expansion complete: {len(gen_result.content)} chars, "
+            f"{total_time:.0f}ms total ({retrieval_time:.0f}ms retrieval, "
+            f"{generation_time:.0f}ms generation)"
+        )
 
         return ExpandResult(
             prompt=gen_result.content,
@@ -504,9 +611,21 @@ Output ONLY the detailed prompt - no explanations or meta-commentary."""
 
         Returns:
             SearchResults with ranked chunks
+
+        Raises:
+            ValueError: If query is empty
         """
+        # Input validation
+        if not query or not query.strip():
+            raise ValueError("Search query cannot be empty")
+        
         top_k = top_k or self.config.retriever.top_k
-        return self.retriever.retrieve(query, top_k=top_k)
+        logger.debug(f"Searching for: '{query[:50]}...' with top_k={top_k}")
+        
+        results = self.retriever.retrieve(query, top_k=top_k)
+        logger.debug(f"Found {len(results.results)} results")
+        
+        return results
 
     @property
     def document_count(self) -> int:
