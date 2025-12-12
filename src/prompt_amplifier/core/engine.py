@@ -8,6 +8,8 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
+from prompt_amplifier.cache.base import BaseCache, CacheConfig, generate_cache_key
+from prompt_amplifier.cache.memory import MemoryCache
 from prompt_amplifier.chunkers.base import BaseChunker
 from prompt_amplifier.core.config import PromptForgeConfig
 from prompt_amplifier.core.exceptions import ConfigurationError, EmbedderError
@@ -80,6 +82,10 @@ class PromptForge:
         vectorstore: BaseVectorStore | None = None,
         retriever: BaseRetriever | None = None,
         generator: BaseGenerator | None = None,
+        # Caching options
+        cache: BaseCache | None = None,
+        cache_config: CacheConfig | None = None,
+        enable_cache: bool = True,
     ):
         """
         Initialize PromptForge.
@@ -92,6 +98,9 @@ class PromptForge:
             vectorstore: Vector store (optional override)
             retriever: Retriever (optional override)
             generator: LLM generator (optional override)
+            cache: Custom cache implementation (optional)
+            cache_config: Cache configuration (optional)
+            enable_cache: Enable/disable caching (default: True)
         """
         self.config = config or PromptForgeConfig()
 
@@ -102,6 +111,18 @@ class PromptForge:
         self._vectorstore = vectorstore
         self._retriever = retriever
         self._generator = generator
+
+        # Initialize cache
+        if enable_cache:
+            if cache is not None:
+                self._cache = cache
+            else:
+                cache_cfg = cache_config or CacheConfig()
+                self._cache = MemoryCache(cache_cfg)
+            logger.debug(f"Caching enabled: {type(self._cache).__name__}")
+        else:
+            self._cache = None
+            logger.debug("Caching disabled")
 
         # Track loaded documents
         self._documents: list[Document] = []
@@ -486,6 +507,7 @@ class PromptForge:
         short_prompt: str,
         top_k: int | None = None,
         system_prompt: str | None = None,
+        use_cache: bool = True,
     ) -> ExpandResult:
         """
         Expand a short prompt into a detailed, structured prompt.
@@ -494,6 +516,7 @@ class PromptForge:
             short_prompt: The short user prompt to expand
             top_k: Number of context chunks to retrieve
             system_prompt: Custom system prompt (uses default if None)
+            use_cache: Whether to use cached results (default: True)
 
         Returns:
             ExpandResult with the expanded prompt and metadata
@@ -516,6 +539,24 @@ class PromptForge:
                 f"(maximum: {MAX_PROMPT_LENGTH})"
             )
 
+        top_k = top_k or self.config.retriever.top_k
+        
+        # Check cache for expansion results
+        cache_key = None
+        if use_cache and self._cache and self._cache.config.cache_generations:
+            cache_key = generate_cache_key(
+                short_prompt, 
+                top_k, 
+                system_prompt or "default",
+                self.vectorstore.count,
+                prefix="expand"
+            )
+            cached_result = self._cache.get(cache_key)
+            if cached_result is not None:
+                logger.info(f"Cache HIT for prompt: '{short_prompt[:30]}...'")
+                cached_result.metadata["cache_hit"] = True
+                return cached_result
+
         logger.info(f"Expanding prompt: '{short_prompt[:50]}{'...' if len(short_prompt) > 50 else ''}'")
         logger.debug(f"Using embedder: {type(self.embedder).__name__}")
         logger.debug(f"Using generator: {type(self.generator).__name__}")
@@ -524,7 +565,6 @@ class PromptForge:
 
         # Retrieve relevant context
         retrieval_start = time.time()
-        top_k = top_k or self.config.retriever.top_k
 
         if self._initialized and self.vectorstore.count > 0:
             results = self.retriever.retrieve(short_prompt, top_k=top_k)
@@ -566,7 +606,7 @@ Output ONLY the detailed prompt - no explanations or meta-commentary."""
             f"{generation_time:.0f}ms generation)"
         )
 
-        return ExpandResult(
+        result = ExpandResult(
             prompt=gen_result.content,
             original_prompt=short_prompt,
             context_chunks=context_chunks,
@@ -580,8 +620,16 @@ Output ONLY the detailed prompt - no explanations or meta-commentary."""
                 "model": gen_result.model,
                 "top_k": top_k,
                 "context_count": len(context_chunks),
+                "cache_hit": False,
             },
         )
+        
+        # Store in cache
+        if cache_key and self._cache:
+            self._cache.set(cache_key, result)
+            logger.debug(f"Cached expansion result for key: {cache_key}")
+        
+        return result
 
     def _format_context(self, chunks: list[Chunk]) -> str:
         """Format context chunks for the prompt."""
@@ -599,6 +647,7 @@ Output ONLY the detailed prompt - no explanations or meta-commentary."""
         self,
         query: str,
         top_k: int | None = None,
+        use_cache: bool = True,
     ) -> SearchResults:
         """
         Search for relevant chunks without expanding.
@@ -608,6 +657,7 @@ Output ONLY the detailed prompt - no explanations or meta-commentary."""
         Args:
             query: Search query
             top_k: Number of results
+            use_cache: Whether to use cached results (default: True)
 
         Returns:
             SearchResults with ranked chunks
@@ -620,10 +670,29 @@ Output ONLY the detailed prompt - no explanations or meta-commentary."""
             raise ValueError("Search query cannot be empty")
         
         top_k = top_k or self.config.retriever.top_k
+        
+        # Check cache for search results
+        cache_key = None
+        if use_cache and self._cache and self._cache.config.cache_searches:
+            cache_key = generate_cache_key(
+                query, 
+                top_k, 
+                self.vectorstore.count,
+                prefix="search"
+            )
+            cached_result = self._cache.get(cache_key)
+            if cached_result is not None:
+                logger.debug(f"Cache HIT for search: '{query[:30]}...'")
+                return cached_result
+        
         logger.debug(f"Searching for: '{query[:50]}...' with top_k={top_k}")
         
         results = self.retriever.retrieve(query, top_k=top_k)
         logger.debug(f"Found {len(results.results)} results")
+        
+        # Store in cache
+        if cache_key and self._cache:
+            self._cache.set(cache_key, results)
         
         return results
 
@@ -637,11 +706,49 @@ Output ONLY the detailed prompt - no explanations or meta-commentary."""
         """Number of chunks in store."""
         return self.vectorstore.count
 
+    @property
+    def cache(self) -> BaseCache | None:
+        """Get the cache instance."""
+        return self._cache
+
+    @property
+    def cache_enabled(self) -> bool:
+        """Check if caching is enabled."""
+        return self._cache is not None and self._cache.config.enabled
+
+    def get_cache_stats(self) -> dict:
+        """Get cache statistics.
+        
+        Returns:
+            Dictionary with cache hit rate, size, etc.
+            Returns empty dict if caching is disabled.
+        """
+        if self._cache is None:
+            return {"enabled": False}
+        return {
+            "enabled": True,
+            **self._cache.get_stats(),
+        }
+
+    def clear_cache(self) -> int:
+        """Clear all cached entries.
+        
+        Returns:
+            Number of entries cleared.
+        """
+        if self._cache is None:
+            return 0
+        count = self._cache.clear()
+        logger.info(f"Cleared {count} cache entries")
+        return count
+
     def __repr__(self) -> str:
+        cache_info = f", cache={'on' if self.cache_enabled else 'off'}"
         return (
             f"PromptForge("
             f"docs={self.document_count}, "
             f"chunks={self.chunk_count}, "
             f"embedder={self.embedder.embedder_name}, "
-            f"store={self.vectorstore.store_name})"
+            f"store={self.vectorstore.store_name}"
+            f"{cache_info})"
         )

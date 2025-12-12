@@ -4,6 +4,52 @@ All notable changes to Prompt Amplifier are documented here.
 
 ---
 
+## [0.2.2] - 2024-12-12
+
+### 🚀 New Features
+
+#### Caching Layer
+- **MemoryCache**: Fast in-memory LRU cache with TTL support
+- **DiskCache**: Persistent disk-based cache for cross-session caching
+- **CacheConfig**: Configurable TTL, max size, and granular cache controls
+- Automatic caching for `search()` and `expand()` operations
+- Cache statistics with hit rate tracking
+- Per-operation cache bypass with `use_cache=False`
+
+### ✨ Improvements
+
+- Added `cache`, `cache_config`, and `enable_cache` parameters to PromptForge
+- Added `get_cache_stats()` method for cache performance monitoring
+- Added `clear_cache()` method for cache management
+- Added `cache_enabled` property
+- Updated `__repr__` to show cache status
+
+### 📚 Documentation
+
+- Added comprehensive Caching guide
+- Updated quickstart with API key requirements
+- Added troubleshooting section
+- Added Google Colab ready examples
+
+---
+
+## [0.2.1] - 2024-12-11
+
+### ✨ Improvements
+
+- **Input Validation**: Clear errors for empty prompts, texts, queries
+- **Structured Logging**: Debug visibility with `logging` module
+- **Better Error Messages**: Actionable suggestions in error text
+- **Fixed Generators**: Separated Anthropic and Google into dedicated files
+
+### 🐛 Bug Fixes
+
+- Fixed `AnthropicGenerator` import from wrong module
+- Fixed `GoogleGenerator` import from wrong module
+- Fixed TF-IDF error message for insufficient documents
+
+---
+
 ## [0.2.0] - 2024-12-09
 
 ### 🚀 New Features

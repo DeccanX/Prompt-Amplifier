@@ -101,6 +101,7 @@ nav:
     - Retrieval: guide/retrieval.md
     - LLM Generators: guide/generators.md
     - Additional Generators: guide/new-generators.md
+    - Caching: guide/caching.md
     - Evaluation Metrics: guide/evaluation.md
     - CLI Tool: guide/cli.md
   - Tutorials:
