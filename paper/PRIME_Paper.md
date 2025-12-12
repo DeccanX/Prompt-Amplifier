@@ -47,43 +47,49 @@ This paper makes five main contributions:
 
 ### 2.1 Retrieval-Augmented Generation
 
-RAG combines the knowledge stored in external documents with the generative capabilities of LLMs. The approach was formalized by Lewis et al. (2020), who showed that retrieving relevant passages before generation significantly improves performance on knowledge-intensive tasks.
+The idea of combining search with generation isn't new—librarians have done it for centuries. But when Lewis et al. (2020) formalized Retrieval-Augmented Generation (RAG), they gave it a name and a framework that stuck. Their insight was elegant: LLMs have impressive capabilities but limited, static knowledge. By retrieving relevant documents before generating, you get the best of both worlds—fresh, accurate information with fluent generation.
 
-The key insight is that LLMs have limitations in their parametric memory—they can't know everything, and their knowledge becomes stale. By retrieving relevant information at query time, RAG systems can provide accurate, up-to-date responses.
+Since then, RAG has become standard practice for building knowledge-intensive applications. Chatbots, search engines, and document analysis tools all use some variant. But there's a gap in the literature: almost all RAG work focuses on augmenting *answers*. We ask a different question—what if we used retrieval to augment the *prompts* themselves?
 
-Our work extends this paradigm. Rather than using retrieval to answer questions, we use it to *formulate* better questions. The retrieved context informs what aspects of a topic are worth covering, what terminology is relevant, and what structure makes sense.
+Think about it. When you ask a domain expert a vague question, they don't just answer—they first clarify and expand your question based on what they know about the domain. "How's the deal going?" becomes "Are you asking about the Winscore, the milestone progress, the executive engagement, or the overall health status?" That's what PRIME does automatically.
 
-### 2.2 Prompt Engineering
+### 2.2 The Evolution of Prompt Engineering
 
-The field has evolved through several phases:
+Prompt engineering has gone through distinct phases, each revealing something important about how LLMs work:
 
-**Manual Prompting**: Early work relied on hand-crafted templates. These work well for specific tasks but require expertise and don't generalize.
+**Phase 1: Templates** (2019-2020). Early practitioners discovered that certain phrasings work better than others. "Translate to French:" beats "Make this French". This era produced endless blogs about "magic prompts" that supposedly unlocked hidden capabilities.
 
-**Few-Shot Learning**: Brown et al. (2020) showed that providing examples in the prompt dramatically improves performance. This reduces the need for task-specific fine-tuning but still requires carefully selecting examples.
+**Phase 2: Few-Shot Learning** (2020). Brown et al.'s GPT-3 paper changed everything. They showed that including a few examples in the prompt—without any fine-tuning—dramatically improved performance. Suddenly, prompts weren't just instructions; they were mini-training sets.
 
-**Chain-of-Thought**: Wei et al. (2022) demonstrated that asking models to "think step by step" improves reasoning performance. This insight—that prompt structure affects output quality—motivates our focus on generating well-structured prompts.
+**Phase 3: Chain-of-Thought** (2022). Wei et al. discovered something surprising: asking models to "think step by step" actually makes them better at reasoning. The prompt structure itself, not just the content, affects output quality. This insight is central to our work.
 
-**Automatic Optimization**: Recent work has explored using LLMs to optimize prompts themselves. Zhou et al. (2023) showed that LLMs can be surprisingly good prompt engineers. Our approach differs in that we leverage external knowledge rather than relying solely on the LLM's internal capabilities.
+**Phase 4: Automatic Optimization** (2023). Zhou et al. showed that LLMs can optimize their own prompts—essentially, AI prompt engineering. But these approaches are constrained to the LLM's internal knowledge. They can't access organization-specific terminology, metrics, or preferences.
+
+PRIME sits at a new intersection: using *external knowledge* to automatically improve prompts, combining the retrieval power of RAG with the structural insights from prompt optimization research.
 
 ### 2.3 Text Embeddings
 
-Effective retrieval requires representing text in a form suitable for similarity computation. Two main approaches exist:
+Before you can search, you need to represent text numerically. This seemingly technical choice has profound implications for what your system can find.
 
-**Sparse Representations**: Methods like TF-IDF and BM25 represent documents as high-dimensional vectors where each dimension corresponds to a vocabulary term. These are fast and interpretable but capture only lexical similarity.
+**Sparse representations** (TF-IDF, BM25) treat documents as bags of words. If your query contains "automobile" but your documents say "car," you get nothing. These methods are fast—sub-millisecond fast—and need no neural networks. They've powered web search for decades. But they miss semantic connections.
 
-**Dense Representations**: Neural approaches like Sentence-BERT (Reimers & Gurevych, 2019) map text to lower-dimensional continuous vectors that capture semantic meaning. These handle synonyms and paraphrasing but require more computation.
+**Dense representations** (Sentence-BERT, OpenAI embeddings) learn to map text into continuous vector spaces where similar meanings are nearby. "Car" and "automobile" land close together. "Happy" and "joyful" are neighbors. These embeddings capture *what you mean*, not just *what you say*. The cost? More computation and typically an external API or a local model.
 
-Our experiments compare both approaches, revealing significant quality differences that inform practical deployment decisions.
+The choice matters more than many practitioners realize. Our experiments show 37-73% quality differences between approaches—far from a rounding error. We'll quantify exactly when each approach makes sense.
 
 ---
 
 ## 3. System Architecture
 
-PRIME implements a five-stage pipeline: Ingestion → Chunking → Embedding → Retrieval → Generation. Each stage has a pluggable interface allowing customization.
+Building a prompt amplification system requires solving five distinct problems: getting documents in, splitting them intelligently, representing them mathematically, finding relevant pieces, and generating coherent expansions. PRIME addresses each with pluggable components, letting users swap parts without rewriting their code.
+
+The pipeline flows naturally: Ingestion → Chunking → Embedding → Retrieval → Generation. Let's walk through each stage.
 
 ### 3.1 Document Ingestion
 
-The first challenge is getting data into the system. Real-world knowledge lives in diverse formats: PDFs, spreadsheets, web pages, even YouTube videos. PRIME supports 10+ formats through a unified loader interface:
+The first problem is mundane but critical: getting data in. Corporate knowledge doesn't live in clean text files. It's scattered across PDFs (often scanned), PowerPoints with speaker notes, Excel sheets with crucial context in column headers, Confluence wikis, Notion pages, and that one critical document someone shared as a Google Doc.
+
+PRIME takes a practical approach—we support 10+ formats out of the box:
 
 | Format | Loader | Description |
 |--------|--------|-------------|
@@ -102,18 +108,24 @@ Each loader produces standardized Document objects with content and metadata, en
 
 ### 3.2 Text Chunking
 
-Long documents must be split into manageable pieces for embedding and retrieval. We implement recursive chunking that respects natural boundaries:
+Here's a problem that seems simple until you try to solve it: how do you split a 50-page document into pieces small enough to embed, while keeping each piece meaningful?
+
+Naive approaches—split every N characters—create garbage. You end up with chunks that start mid-sentence and end mid-word. The embedding of such a chunk captures... what, exactly?
+
+Our recursive chunker respects natural boundaries:
 
 ```
 Algorithm: RecursiveChunk(text, separators, size, overlap)
 1. If text fits in chunk size, return [text]
-2. Split by current separator
+2. Split by current separator (paragraph → sentence → word)
 3. Combine adjacent pieces until size limit
 4. Include overlap with previous chunk
 5. Recurse with finer separators if needed
 ```
 
-The algorithm first tries splitting by paragraphs, then sentences, then words, ensuring chunks are semantically coherent when possible.
+The key insight: try splitting by paragraphs first. If paragraphs are too big, split by sentences. Only if sentences are too big (rare) do we split by words. This hierarchy preserves semantic coherence.
+
+The overlap parameter ensures context doesn't get lost at chunk boundaries. If a concept spans two paragraphs, both chunks will capture part of it. Our ablation study (Section 6.5) shows this matters: smaller chunks with overlap significantly outperform larger chunks.
 
 ### 3.3 Embedding Module
 
@@ -165,9 +177,9 @@ The LLM produces the expanded prompt, which includes structure and specificity a
 
 ### 4.1 Problem Formalization
 
-We define prompt amplification formally:
+What exactly are we optimizing? Without a formal definition, "better prompts" remains vague. Here's our formulation:
 
-**Definition (Prompt Amplification)**: Given input prompt *p*, knowledge corpus *K*, and quality function *Q*, find:
+**Definition (Prompt Amplification)**: Given input prompt *p*, knowledge corpus *K*, and quality function *Q*, find the expansion *p\** that maximizes quality while preserving intent:
 
 ```
 p* = argmax Q(p')
@@ -176,25 +188,29 @@ p* = argmax Q(p')
 
 subject to: Intent(p') ≡ Intent(p)
 
-In words: find the highest-quality expanded prompt that preserves the original intent while incorporating knowledge from the corpus.
+The intent preservation constraint is crucial. An expanded prompt that drifts into unrelated topics—even if well-structured—fails the task. The user asked about deal health, not a general overview of sales methodology.
+
+In practice, we approximate this optimization through retrieval (find relevant knowledge) and generation (synthesize into a coherent prompt). The quality of the approximation depends on both components, which we evaluate separately.
 
 ### 4.2 Quality Metrics
 
-We measure prompt quality along four dimensions:
+Evaluating generated prompts is harder than it sounds. Human judgment is expensive and inconsistent. Standard NLP metrics (BLEU, ROUGE) compare against references that don't exist. We designed four interpretable metrics that capture what practitioners actually care about:
 
-**Structural Coherence (S)**: Does the prompt have clear organization? We detect headers, bullet points, numbered lists, and sections:
+**Structural Coherence (S)**: Does the prompt have clear organization? We detect headers (##), bullet points (•, -), numbered lists (1., 2.), and explicit sections:
 
 ```
 S(p) = (1/N) × Σ min(count(pattern_i, p) / threshold_i, 1)
 ```
 
-**Semantic Specificity (P)**: Does the prompt give specific instructions? We check for action verbs ("generate", "analyze"), constraints ("must", "required"), and format specifications:
+A well-structured prompt guides the LLM. "First do X, then Y, finally Z" beats a wall of text.
+
+**Semantic Specificity (P)**: Vague prompts get vague answers. We check for action verbs ("generate", "analyze", "compare"), constraints ("must", "required", "exactly"), and format specifications ("as a table", "in JSON"):
 
 ```
 P(p) = (|ActionVerbs ∩ p| + |Constraints ∩ p| + |Formats ∩ p|) / MaxScore
 ```
 
-**Contextual Completeness (C)**: Does the prompt cover expected sections? We check for goal, context, sections, instructions, and output format:
+**Contextual Completeness (C)**: Good prompts set expectations. We check for five elements: goal statement, context, required sections, specific instructions, and output format:
 
 ```
 C(p) = |ExpectedSections ∩ p| / |ExpectedSections|
@@ -459,19 +475,19 @@ From 4 words to a structured prompt with goals, sections, and expected output fo
 
 ## 7. Discussion
 
-### 7.1 Summary of Findings
+### 7.1 What We Learned
 
-Our comprehensive evaluation reveals several important insights:
+After running experiments across four domains, five embedders, three generators, and dozens of configuration variations, certain patterns emerged that surprised even us.
 
-1. **Dense embeddings are essential for quality**: Across all domains, semantic embeddings (SBERT, OpenAI, Google) consistently outperform lexical methods (TF-IDF, BM25) by 37-73% in retrieval precision.
+**Dense embeddings aren't optional—they're essential.** We expected sparse methods to be "good enough" for simple use cases. They're not. The 37-73% quality gap is too large to ignore. If you're building a production system, start with SBERT (free, local) or API embeddings. TF-IDF is for prototyping only.
 
-2. **Domain generalization works**: PRIME achieves meaningful retrieval across all four tested domains, with scores ranging from 0.195 (support) to 0.519 (research). This suggests the framework can be deployed without domain-specific fine-tuning.
+**Domain generalization actually works.** This was our biggest pleasant surprise. A system configured for sales documents retrieves research papers nearly as well (0.519 vs 0.269). The embedding models have absorbed enough general knowledge that they don't need domain-specific tuning for most use cases.
 
-3. **Chunk size matters significantly**: Smaller chunks (100 chars) achieve 27% higher scores than larger chunks (1000 chars), highlighting the importance of this often-overlooked hyperparameter.
+**The chunk size dial matters more than we expected.** Moving from 1000-character chunks to 100-character chunks improved retrieval by 27%. That's a massive gain from a simple configuration change. Most practitioners use whatever default their framework provides. They shouldn't.
 
-4. **Caching provides dramatic speedup**: Memory caching achieves 1,391× speedup for repeated queries, making PRIME suitable for interactive applications with query patterns.
+**Caching isn't just optimization—it changes what's possible.** A 1,944× speedup means an operation that took 10 seconds now takes 5 milliseconds. That transforms "batch processing" into "real-time interaction." For any application with query repetition (and most have it), caching should be default-on.
 
-5. **Generator strengths are complementary**: Claude excels at structure (0.80), GPT-4o at readability (1.00), and Gemini at specificity (0.25), suggesting value in task-specific generator selection.
+**LLM generators have personalities.** Claude writes beautifully structured outputs with clear headers. GPT-4 produces polished prose that flows naturally. Gemini includes specific, actionable instructions. None is "best"—the right choice depends on what you need.
 
 ### 7.2 Practical Implications
 
@@ -483,27 +499,34 @@ Our results provide concrete guidance for practitioners:
 
 **For cost-sensitive deployments**: Use SBERT with any generator. No embedding API costs, 90% of best retrieval quality.
 
-### 7.2 Limitations
+### 7.3 Limitations
 
-Several limitations warrant acknowledgment:
+We've tried to be thorough, but no study covers everything. Here's what we couldn't (or didn't) do:
 
-1. **Single domain evaluation**: Our experiments focus on sales/POC data. Other domains may show different patterns.
+**Corpus scale.** Our test corpora are small—8-16 documents per domain. Real deployments often have thousands. Hybrid retrieval, for instance, might shine at larger scales where lexical matching catches what semantic search misses. We saw hints of this but couldn't fully explore it.
 
-2. **Quality metrics are heuristic**: Our metrics capture structural properties but don't directly measure task completion success.
+**Heuristic metrics.** Our quality metrics measure structural properties: headers, bullet points, action verbs. They don't measure whether an expanded prompt actually leads to better task completion. A perfectly structured prompt that misunderstands the user's intent would score well on our metrics but fail in practice.
 
-3. **No human evaluation**: We rely on automated metrics. Human judgment of prompt quality would strengthen conclusions.
+**No human evaluation.** We didn't run user studies asking people to rate prompt quality or compare PRIME outputs to alternatives. Automated metrics, however carefully designed, can't capture everything humans care about. This is expensive but important future work.
 
-4. **Limited generator sample**: Testing only three generators leaves questions about others (Llama, Mistral, etc.).
+**Three generators.** We tested OpenAI, Anthropic, and Google—the major commercial players. But Mistral, Llama, and other open-source models might behave differently. Our architecture supports them; we just didn't have time to run those experiments.
 
-### 7.3 When Prompt Amplification Helps
+**English only.** PRIME uses embedders trained primarily on English. Performance on other languages is unknown. Multilingual SBERT variants exist, but we haven't tested them.
 
-Our approach works best when:
-- Users have domain knowledge available in documents
-- Natural queries are ambiguous or underspecified
-- Consistent, structured LLM outputs are desired
-- The cost of poor prompts (irrelevant outputs) is high
+### 7.4 When to Use (and Not Use) PRIME
 
-It's less necessary when users already provide detailed prompts or when tasks are simple enough that brief prompts suffice.
+PRIME shines when:
+
+- **Domain knowledge exists in documents.** The system can only expand prompts using what it knows. No documents = no expansion.
+- **User queries are ambiguous.** "How's the deal going?" needs expansion. "Generate a detailed POC health report with Winscore, milestone status, and risk factors" doesn't.
+- **Consistency matters.** Organizations that need standardized report structures benefit from PRIME's templating effect.
+- **Prompt engineering is a bottleneck.** If users waste hours crafting the "right" prompt, automation saves time.
+
+PRIME is overkill when:
+
+- **Queries are already detailed.** Expert users who naturally write good prompts don't need expansion.
+- **Tasks are simple.** "Translate to French" doesn't need amplification.
+- **Real-time latency is critical.** Retrieval + generation adds seconds. For chat applications expecting sub-second responses, this matters.
 
 ---
 
