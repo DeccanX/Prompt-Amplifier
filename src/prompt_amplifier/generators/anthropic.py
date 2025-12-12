@@ -133,4 +133,3 @@ Make the expanded prompt actionable and specific. Include tables, lists, and str
     def supports_streaming(self) -> bool:
         """Whether this generator supports streaming."""
         return True
-

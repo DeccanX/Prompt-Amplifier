@@ -357,7 +357,7 @@ class PromptForge:
         # Input validation
         if not source:
             raise ValueError("Source path cannot be empty")
-        
+
         loader = loader or self.loader
         path = Path(source)
 
@@ -376,8 +376,7 @@ class PromptForge:
                 raise ValueError(f"Failed to load document: {path}")
         else:
             raise FileNotFoundError(
-                f"Source not found: {source}. "
-                f"Please provide a valid file or directory path."
+                f"Source not found: {source}. " f"Please provide a valid file or directory path."
             )
 
         logger.info(f"Loaded {len(docs)} documents")
@@ -418,19 +417,17 @@ class PromptForge:
         # Input validation
         if not texts:
             raise ValueError("texts cannot be empty")
-        
+
         # Filter out empty texts
         valid_texts = [t for t in texts if t and t.strip()]
         if not valid_texts:
             raise ValueError("All provided texts are empty")
-        
+
         if len(valid_texts) < len(texts):
-            logger.warning(
-                f"Filtered out {len(texts) - len(valid_texts)} empty texts"
-            )
-        
+            logger.warning(f"Filtered out {len(texts) - len(valid_texts)} empty texts")
+
         logger.info(f"Adding {len(valid_texts)} texts from source: {source}")
-        
+
         docs = [
             Document(
                 content=text,
@@ -446,7 +443,7 @@ class PromptForge:
         # Chunk and store
         chunks = self.chunker.chunk_documents(docs)
         self._chunks.extend(chunks)
-        
+
         logger.debug(f"Created {len(chunks)} chunks from {len(docs)} documents")
 
         if chunks:
@@ -473,7 +470,7 @@ class PromptForge:
             if not self.embedder.is_fitted:
                 # Fit on all chunks we have
                 all_texts = [c.content for c in self._chunks]
-                
+
                 # Validate minimum documents for TF-IDF
                 if len(all_texts) < MIN_DOCUMENTS_FOR_TFIDF:
                     raise EmbedderError(
@@ -482,7 +479,7 @@ class PromptForge:
                         f"Either add more documents or use a dense embedder like "
                         f"SentenceTransformerEmbedder which works with any number of documents."
                     )
-                
+
                 try:
                     self.embedder.fit(all_texts)
                     logger.debug(f"Fitted sparse embedder on {len(all_texts)} texts")
@@ -528,11 +525,11 @@ class PromptForge:
         # Input validation
         if not short_prompt:
             raise ValueError("Prompt cannot be empty")
-        
+
         short_prompt = short_prompt.strip()
         if not short_prompt:
             raise ValueError("Prompt cannot be only whitespace")
-        
+
         if len(short_prompt) > MAX_PROMPT_LENGTH:
             raise ValueError(
                 f"Prompt too long: {len(short_prompt)} characters "
@@ -540,16 +537,16 @@ class PromptForge:
             )
 
         top_k = top_k or self.config.retriever.top_k
-        
+
         # Check cache for expansion results
         cache_key = None
         if use_cache and self._cache and self._cache.config.cache_generations:
             cache_key = generate_cache_key(
-                short_prompt, 
-                top_k, 
+                short_prompt,
+                top_k,
                 system_prompt or "default",
                 self.vectorstore.count,
-                prefix="expand"
+                prefix="expand",
             )
             cached_result = self._cache.get(cache_key)
             if cached_result is not None:
@@ -557,10 +554,12 @@ class PromptForge:
                 cached_result.metadata["cache_hit"] = True
                 return cached_result
 
-        logger.info(f"Expanding prompt: '{short_prompt[:50]}{'...' if len(short_prompt) > 50 else ''}'")
+        logger.info(
+            f"Expanding prompt: '{short_prompt[:50]}{'...' if len(short_prompt) > 50 else ''}'"
+        )
         logger.debug(f"Using embedder: {type(self.embedder).__name__}")
         logger.debug(f"Using generator: {type(self.generator).__name__}")
-        
+
         start_time = time.time()
 
         # Retrieve relevant context
@@ -623,12 +622,12 @@ Output ONLY the detailed prompt - no explanations or meta-commentary."""
                 "cache_hit": False,
             },
         )
-        
+
         # Store in cache
         if cache_key and self._cache:
             self._cache.set(cache_key, result)
             logger.debug(f"Cached expansion result for key: {cache_key}")
-        
+
         return result
 
     def _format_context(self, chunks: list[Chunk]) -> str:
@@ -668,32 +667,27 @@ Output ONLY the detailed prompt - no explanations or meta-commentary."""
         # Input validation
         if not query or not query.strip():
             raise ValueError("Search query cannot be empty")
-        
+
         top_k = top_k or self.config.retriever.top_k
-        
+
         # Check cache for search results
         cache_key = None
         if use_cache and self._cache and self._cache.config.cache_searches:
-            cache_key = generate_cache_key(
-                query, 
-                top_k, 
-                self.vectorstore.count,
-                prefix="search"
-            )
+            cache_key = generate_cache_key(query, top_k, self.vectorstore.count, prefix="search")
             cached_result = self._cache.get(cache_key)
             if cached_result is not None:
                 logger.debug(f"Cache HIT for search: '{query[:30]}...'")
                 return cached_result
-        
+
         logger.debug(f"Searching for: '{query[:50]}...' with top_k={top_k}")
-        
+
         results = self.retriever.retrieve(query, top_k=top_k)
         logger.debug(f"Found {len(results.results)} results")
-        
+
         # Store in cache
         if cache_key and self._cache:
             self._cache.set(cache_key, results)
-        
+
         return results
 
     @property
@@ -718,7 +712,7 @@ Output ONLY the detailed prompt - no explanations or meta-commentary."""
 
     def get_cache_stats(self) -> dict:
         """Get cache statistics.
-        
+
         Returns:
             Dictionary with cache hit rate, size, etc.
             Returns empty dict if caching is disabled.
@@ -732,7 +726,7 @@ Output ONLY the detailed prompt - no explanations or meta-commentary."""
 
     def clear_cache(self) -> int:
         """Clear all cached entries.
-        
+
         Returns:
             Number of entries cleared.
         """

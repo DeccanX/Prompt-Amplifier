@@ -155,12 +155,11 @@ class TestEdgeCases:
     """Tests for edge cases and error handling."""
 
     def test_empty_texts(self):
-        """Test with empty texts list."""
+        """Test with empty texts list raises ValueError."""
         forge = PromptForge()
-        count = forge.add_texts([])
 
-        assert count == 0
-        assert forge.chunk_count == 0
+        with pytest.raises(ValueError, match="texts cannot be empty"):
+            forge.add_texts([])
 
     def test_empty_search(self):
         """Test searching empty store."""

@@ -141,4 +141,3 @@ Make the expanded prompt actionable and specific. Use tables, lists, and clear s
 
 # Alias for backward compatibility
 GeminiGenerator = GoogleGenerator
-
