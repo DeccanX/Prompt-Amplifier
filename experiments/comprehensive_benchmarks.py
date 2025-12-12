@@ -327,6 +327,225 @@ def run_caching_benchmark():
     return results
 
 
+def run_embedder_comparison():
+    """Compare different embedding strategies on same dataset."""
+    from prompt_amplifier import PromptForge
+    from prompt_amplifier.embedders import TFIDFEmbedder, SentenceTransformerEmbedder
+
+    results = []
+    documents = DOMAIN_DATA["sales"]["documents"]
+    queries = DOMAIN_DATA["sales"]["queries"]
+
+    embedders = [
+        ("TF-IDF", TFIDFEmbedder()),
+        ("SBERT-MiniLM", SentenceTransformerEmbedder(model="all-MiniLM-L6-v2")),
+    ]
+
+    for name, embedder in embedders:
+        try:
+            forge = PromptForge(embedder=embedder)
+            forge.add_texts(documents)
+
+            query_scores = []
+            query_times = []
+
+            for query in queries:
+                start = time.time()
+                search_results = forge.search(query, top_k=3)
+                query_times.append((time.time() - start) * 1000)
+
+                if search_results.results:
+                    query_scores.append(search_results.results[0].score)
+
+            results.append({
+                "embedder": name,
+                "avg_score": round(sum(query_scores) / len(query_scores), 3) if query_scores else 0,
+                "avg_time_ms": round(sum(query_times) / len(query_times), 2),
+                "dimension": getattr(embedder, "dimension", "N/A"),
+            })
+        except Exception as e:
+            results.append({"embedder": name, "error": str(e)})
+
+    return results
+
+
+def run_hybrid_retrieval_experiment():
+    """Compare pure vector vs hybrid (BM25 + vector) retrieval."""
+    from prompt_amplifier import PromptForge
+    from prompt_amplifier.embedders import SentenceTransformerEmbedder
+    from prompt_amplifier.retrievers import VectorRetriever, HybridRetriever
+    from prompt_amplifier.vectorstores import MemoryStore
+
+    documents = DOMAIN_DATA["sales"]["documents"] + DOMAIN_DATA["research"]["documents"]
+    queries = [
+        "deal health status",  # Sales domain
+        "research methodology",  # Research domain
+        "performance metrics",  # Both domains
+        "customer engagement",  # Sales focus
+    ]
+
+    results = {"vector_only": [], "hybrid": []}
+
+    # Setup common components
+    embedder = SentenceTransformerEmbedder()
+    vectorstore = MemoryStore()
+
+    forge = PromptForge(embedder=embedder, vectorstore=vectorstore)
+    forge.add_texts(documents)
+
+    # Vector-only retrieval
+    vector_retriever = VectorRetriever(embedder=embedder, vectorstore=vectorstore, top_k=5)
+
+    for query in queries:
+        start = time.time()
+        search_results = vector_retriever.retrieve(query, top_k=5)
+        elapsed = (time.time() - start) * 1000
+
+        scores = [r.score for r in search_results.results]
+        results["vector_only"].append({
+            "query": query,
+            "time_ms": round(elapsed, 2),
+            "avg_score": round(sum(scores) / len(scores), 3) if scores else 0,
+            "top_score": round(scores[0], 3) if scores else 0,
+            "num_results": len(search_results.results),
+        })
+
+    # Hybrid retrieval (if available)
+    try:
+        hybrid_retriever = HybridRetriever(
+            embedder=embedder,
+            vectorstore=vectorstore,
+            alpha=0.5,  # Balance between BM25 and vector
+            top_k=5,
+        )
+
+        for query in queries:
+            start = time.time()
+            search_results = hybrid_retriever.retrieve(query, top_k=5)
+            elapsed = (time.time() - start) * 1000
+
+            scores = [r.score for r in search_results.results]
+            results["hybrid"].append({
+                "query": query,
+                "time_ms": round(elapsed, 2),
+                "avg_score": round(sum(scores) / len(scores), 3) if scores else 0,
+                "top_score": round(scores[0], 3) if scores else 0,
+                "num_results": len(search_results.results),
+            })
+    except Exception as e:
+        results["hybrid_error"] = str(e)
+
+    # Calculate aggregates
+    if results["vector_only"]:
+        results["vector_avg_score"] = round(
+            sum(r["avg_score"] for r in results["vector_only"]) / len(results["vector_only"]), 3
+        )
+        results["vector_avg_time"] = round(
+            sum(r["time_ms"] for r in results["vector_only"]) / len(results["vector_only"]), 2
+        )
+
+    if results["hybrid"] and "hybrid_error" not in results:
+        results["hybrid_avg_score"] = round(
+            sum(r["avg_score"] for r in results["hybrid"]) / len(results["hybrid"]), 3
+        )
+        results["hybrid_avg_time"] = round(
+            sum(r["time_ms"] for r in results["hybrid"]) / len(results["hybrid"]), 2
+        )
+
+    return results
+
+
+def run_alpha_ablation():
+    """Ablation study: Effect of hybrid alpha on retrieval quality."""
+    from prompt_amplifier import PromptForge
+    from prompt_amplifier.embedders import SentenceTransformerEmbedder
+    from prompt_amplifier.retrievers import HybridRetriever
+    from prompt_amplifier.vectorstores import MemoryStore
+
+    documents = DOMAIN_DATA["sales"]["documents"]
+    query = "deal health and performance metrics"
+
+    embedder = SentenceTransformerEmbedder()
+    vectorstore = MemoryStore()
+
+    forge = PromptForge(embedder=embedder, vectorstore=vectorstore)
+    forge.add_texts(documents)
+
+    alphas = [0.0, 0.25, 0.5, 0.75, 1.0]
+    results = []
+
+    for alpha in alphas:
+        try:
+            retriever = HybridRetriever(
+                embedder=embedder,
+                vectorstore=vectorstore,
+                alpha=alpha,
+                top_k=5,
+            )
+
+            start = time.time()
+            search_results = retriever.retrieve(query, top_k=5)
+            elapsed = (time.time() - start) * 1000
+
+            scores = [r.score for r in search_results.results]
+
+            results.append({
+                "alpha": alpha,
+                "description": f"{'BM25 only' if alpha == 0 else 'Vector only' if alpha == 1 else f'{int(alpha*100)}% vector'}",
+                "time_ms": round(elapsed, 2),
+                "avg_score": round(sum(scores) / len(scores), 3) if scores else 0,
+                "top_score": round(scores[0], 3) if scores else 0,
+            })
+        except Exception as e:
+            results.append({"alpha": alpha, "error": str(e)})
+
+    return results
+
+
+def run_query_complexity_experiment():
+    """Test how query complexity affects retrieval quality."""
+    from prompt_amplifier import PromptForge
+    from prompt_amplifier.embedders import SentenceTransformerEmbedder
+
+    documents = DOMAIN_DATA["sales"]["documents"]
+
+    queries = {
+        "simple": ["deal", "status", "metrics"],
+        "medium": ["deal status", "health check", "performance metrics"],
+        "complex": [
+            "What is the current deal health status?",
+            "Analyze the relationship between winscore and feature fit",
+            "How does executive sponsor involvement affect deal velocity?",
+        ],
+    }
+
+    forge = PromptForge(embedder=SentenceTransformerEmbedder())
+    forge.add_texts(documents)
+
+    results = {}
+
+    for complexity, query_list in queries.items():
+        scores = []
+        times = []
+
+        for query in query_list:
+            start = time.time()
+            search_results = forge.search(query, top_k=3)
+            times.append((time.time() - start) * 1000)
+
+            if search_results.results:
+                scores.append(search_results.results[0].score)
+
+        results[complexity] = {
+            "num_queries": len(query_list),
+            "avg_score": round(sum(scores) / len(scores), 3) if scores else 0,
+            "avg_time_ms": round(sum(times) / len(times), 2),
+            "example_query": query_list[0],
+        }
+
+    return results
+
+
 def main():
     """Run all experiments."""
     print("=" * 70)
@@ -339,6 +558,10 @@ def main():
         "ablation_chunk_size": [],
         "ablation_top_k": [],
         "caching_benchmark": {},
+        "embedder_comparison": [],
+        "hybrid_retrieval": {},
+        "alpha_ablation": [],
+        "query_complexity": {},
     }
 
     # 1. Multi-domain experiments
@@ -370,9 +593,41 @@ def main():
         print(f"  ✗ ({e})")
 
     # 4. Caching benchmark
-    print("\n[4/4] Running caching benchmark...")
+    print("\n[4/8] Running caching benchmark...")
     try:
         results["caching_benchmark"] = run_caching_benchmark()
+        print("  ✓ Complete")
+    except Exception as e:
+        print(f"  ✗ ({e})")
+
+    # 5. Embedder comparison
+    print("\n[5/8] Running embedder comparison...")
+    try:
+        results["embedder_comparison"] = run_embedder_comparison()
+        print("  ✓ Complete")
+    except Exception as e:
+        print(f"  ✗ ({e})")
+
+    # 6. Hybrid retrieval
+    print("\n[6/8] Running hybrid retrieval experiment...")
+    try:
+        results["hybrid_retrieval"] = run_hybrid_retrieval_experiment()
+        print("  ✓ Complete")
+    except Exception as e:
+        print(f"  ✗ ({e})")
+
+    # 7. Alpha ablation
+    print("\n[7/8] Running alpha ablation...")
+    try:
+        results["alpha_ablation"] = run_alpha_ablation()
+        print("  ✓ Complete")
+    except Exception as e:
+        print(f"  ✗ ({e})")
+
+    # 8. Query complexity
+    print("\n[8/8] Running query complexity experiment...")
+    try:
+        results["query_complexity"] = run_query_complexity_experiment()
         print("  ✓ Complete")
     except Exception as e:
         print(f"  ✗ ({e})")
@@ -416,6 +671,29 @@ def main():
     if "disk_cache" in cache:
         print(f"  Disk Cache: {cache['disk_cache']['speedup']}x speedup, "
               f"{cache['disk_cache']['hit_rate']:.0%} hit rate")
+
+    print("\n🔀 Embedder Comparison:")
+    for item in results.get("embedder_comparison", []):
+        if "error" not in item:
+            print(f"  {item['embedder']}: score={item['avg_score']:.3f}, time={item['avg_time_ms']:.1f}ms")
+
+    print("\n🔗 Hybrid Retrieval:")
+    hybrid = results.get("hybrid_retrieval", {})
+    if "vector_avg_score" in hybrid:
+        print(f"  Vector-only: score={hybrid['vector_avg_score']:.3f}")
+    if "hybrid_avg_score" in hybrid:
+        print(f"  Hybrid (α=0.5): score={hybrid['hybrid_avg_score']:.3f}")
+    if "hybrid_error" in hybrid:
+        print(f"  Hybrid error: {hybrid['hybrid_error'][:50]}...")
+
+    print("\n⚖️ Alpha Ablation:")
+    for item in results.get("alpha_ablation", []):
+        if "error" not in item:
+            print(f"  α={item['alpha']}: score={item['avg_score']:.3f} ({item['description']})")
+
+    print("\n📝 Query Complexity:")
+    for complexity, data in results.get("query_complexity", {}).items():
+        print(f"  {complexity}: score={data['avg_score']:.3f}, time={data['avg_time_ms']:.1f}ms")
 
     return results
 

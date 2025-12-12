@@ -7,9 +7,9 @@ moreyrb@gmail.com
 
 ## Abstract
 
-The effectiveness of Large Language Models (LLMs) hinges critically on prompt quality, yet crafting comprehensive prompts remains cognitively demanding. We introduce PRIME (Prompt Refinement via Information-driven Methods and Expansion), a modular framework that automatically transforms brief user inputs into semantically rich, well-structured prompts through retrieval-augmented generation. Our system implements a configurable pipeline with heterogeneous document loaders (10+ formats), pluggable embedding strategies (sparse and dense), persistent vector stores, built-in caching (1,391× speedup), and multi-provider LLM generators. We formalize prompt amplification as an information-theoretic optimization problem and introduce four evaluation metrics: structural coherence, semantic specificity, contextual completeness, and lexical readability. Comprehensive experiments across four domains (sales, research, support, content creation), five embedding configurations, and three LLM backends reveal that: (1) dense embeddings achieve 37-73% higher retrieval precision compared to sparse methods; (2) smaller chunk sizes (100 chars) improve retrieval by 27%; (3) Google's Gemini-2.0-flash achieves the highest prompt quality score (0.751); and (4) PRIME generalizes across domains without fine-tuning. PRIME is released as an open-source Python library (`pip install prompt-amplifier`), facilitating reproducible research in automated prompt engineering.
+The effectiveness of Large Language Models (LLMs) hinges critically on prompt quality, yet crafting comprehensive prompts remains cognitively demanding. We introduce PRIME (Prompt Refinement via Information-driven Methods and Expansion), a modular framework that automatically transforms brief user inputs into semantically rich, well-structured prompts through retrieval-augmented generation. Our system implements a configurable pipeline with heterogeneous document loaders (10+ formats), pluggable embedding strategies (sparse and dense), persistent vector stores, built-in caching (1,944× speedup), and multi-provider LLM generators. We formalize prompt amplification as an information-theoretic optimization problem and introduce four evaluation metrics: structural coherence, semantic specificity, contextual completeness, and lexical readability. Comprehensive experiments across four domains (sales, research, support, content creation), five embedding configurations, three LLM backends, and multiple ablation conditions reveal that: (1) dense embeddings achieve 37-73% higher retrieval precision compared to sparse methods; (2) smaller chunk sizes (100 chars) improve retrieval by 27%; (3) complex queries outperform simple ones by 92%; (4) Google's Gemini-2.0-flash achieves the highest prompt quality score (0.751); and (5) PRIME generalizes across domains without fine-tuning. We also analyze hybrid retrieval (BM25 + vector), query complexity effects, and caching strategies. PRIME is released as an open-source Python library (`pip install prompt-amplifier`), facilitating reproducible research in automated prompt engineering.
 
-**Keywords:** Prompt Engineering, RAG, Retrieval-Augmented Generation, Text Embeddings, LLM, Prompt Amplification, Information Retrieval
+**Keywords:** Prompt Engineering, RAG, Retrieval-Augmented Generation, Text Embeddings, LLM, Prompt Amplification, Information Retrieval, Hybrid Search
 
 ---
 
@@ -364,17 +364,72 @@ PRIME includes an optional caching layer to reduce latency and API costs:
 
 | Cache Type | First Pass | Second Pass | Speedup | Hit Rate |
 |------------|------------|-------------|---------|----------|
-| **Memory Cache** | 8.71 ms | 0.01 ms | **1,391×** | 50% |
-| **Disk Cache** | 9.97 ms | 0.27 ms | 36.5× | 50% |
+| **Memory Cache** | 8.71 ms | 0.01 ms | **1,944×** | 50% |
+| **Disk Cache** | 9.97 ms | 0.25 ms | 39.2× | 50% |
 | No Cache | 8.96 ms | 8.96 ms | 1× | N/A |
 
 **Key Benefits**:
 
-1. **Dramatic speedup**: Memory caching provides 1,391× speedup for repeated queries, reducing response time from ~9ms to 0.01ms.
+1. **Dramatic speedup**: Memory caching provides nearly 2,000× speedup for repeated queries, reducing response time from ~9ms to 0.005ms.
 
-2. **Persistent caching**: Disk cache maintains speedup across sessions (36.5×), useful for production deployments.
+2. **Persistent caching**: Disk cache maintains speedup across sessions (39×), useful for production deployments.
 
 3. **Cost savings**: For API-based embeddings/generators, caching eliminates redundant API calls, potentially saving 50%+ on API costs for applications with query repetition.
+
+### 6.7 Query Complexity Analysis
+
+We investigated how query length and specificity affect retrieval quality:
+
+| Query Type | Example | Avg Score | Avg Time |
+|------------|---------|-----------|----------|
+| **Simple** | "deal" | 0.276 | 17.8 ms |
+| **Medium** | "deal status" | 0.416 | 8.5 ms |
+| **Complex** | "What is the current deal health status?" | **0.530** | 86.2 ms |
+
+**Key Insight**: Counter-intuitively, longer, more specific queries achieve *higher* retrieval scores (+92% vs simple queries). This occurs because:
+
+1. **More semantic content**: Complex queries contain more distinctive vocabulary that the embedder can match.
+2. **Reduced ambiguity**: "deal" could match many things; "deal health status" constrains the search space.
+3. **Natural language advantage**: Sentence-based embedders like SBERT are trained on full sentences, not single words.
+
+**Implication**: Users should be encouraged to provide more context in their queries, contrary to the common assumption that brief queries are better.
+
+### 6.8 Embedder Comparison (Controlled)
+
+Direct comparison on identical dataset (Sales domain, 8 documents, 4 queries):
+
+| Embedder | Avg Score | Avg Time | Memory | API Cost |
+|----------|-----------|----------|--------|----------|
+| TF-IDF | 0.227 | **0.2 ms** | Low | Free |
+| SBERT-MiniLM | **0.268** | 10.6 ms | Medium | Free |
+| OpenAI-3-small | 0.78* | 972 ms | Low | $0.02/1M |
+| Google Embed | 0.76* | 298 ms | Low | $0.0001/1K |
+
+*From prior API experiments
+
+**Trade-off Analysis**:
+
+- **TF-IDF**: 50× faster but 18% lower quality. Best for high-throughput, low-latency needs.
+- **SBERT**: Good balance of quality and cost. Best for most use cases.
+- **API embeddings**: Highest quality but require network calls and incur costs.
+
+### 6.9 Hybrid Retrieval
+
+We tested combining BM25 (lexical) with vector (semantic) search:
+
+| Configuration | Avg Score | Notes |
+|---------------|-----------|-------|
+| Vector-only (α=1.0) | **0.349** | Dense semantic matching |
+| BM25-only (α=0.0) | 0.287 | Keyword matching |
+| Hybrid (α=0.5) | 0.318 | Combined approach |
+
+**Finding**: For our test corpus, pure vector retrieval outperforms hybrid approaches. This differs from findings in large-scale IR benchmarks, likely because:
+
+1. Our corpus is small (8-16 documents) where semantic matching is sufficient
+2. Document vocabulary is specialized and consistent
+3. Hybrid benefits emerge at scale with more lexical diversity
+
+**Recommendation**: Start with vector-only retrieval; consider hybrid for large, heterogeneous corpora.
 
 ### 6.4 Case Study
 
@@ -454,7 +509,7 @@ It's less necessary when users already provide detailed prompts or when tasks ar
 
 ## 8. Conclusion
 
-We presented PRIME, a comprehensive framework for automatically transforming brief prompts into detailed, structured instructions through retrieval-augmented generation. Our extensive experiments across four domains, five embedding strategies, three LLM generators, and multiple ablation conditions reveal several important findings:
+We presented PRIME, a comprehensive framework for automatically transforming brief prompts into detailed, structured instructions through retrieval-augmented generation. Our extensive experiments across four domains, five embedding strategies, three LLM generators, hybrid retrieval configurations, and multiple ablation conditions reveal several important findings:
 
 **Key Contributions and Results**:
 
@@ -464,9 +519,13 @@ We presented PRIME, a comprehensive framework for automatically transforming bri
 
 3. **Configuration insights**: Chunk sizes of 100-200 characters optimize retrieval precision (+27%), while k=3-5 provides the best balance of context breadth and relevance.
 
-4. **Caching for production**: Our caching layer provides up to 1,391× speedup for repeated queries, essential for interactive applications.
+4. **Query complexity insight**: Surprisingly, complex natural language queries outperform simple keyword queries by 92% (0.530 vs 0.276), suggesting users should be encouraged to write fuller queries.
 
-5. **Complementary generators**: Claude excels at structure, GPT-4o at readability, and Gemini at specificity and overall quality (0.751).
+5. **Hybrid retrieval**: Pure vector retrieval outperforms hybrid (BM25 + vector) approaches for specialized corpora, though hybrid may benefit larger, heterogeneous collections.
+
+6. **Caching for production**: Our caching layer provides up to 1,944× speedup for repeated queries, essential for interactive applications with query patterns.
+
+7. **Complementary generators**: Claude excels at structure (0.80), GPT-4o at readability (1.0), and Gemini at specificity and overall quality (0.751), suggesting value in task-specific selection.
 
 **Impact**: PRIME reduces the expertise required for effective LLM interaction. Rather than learning prompt engineering techniques, users can simply ask natural questions and receive well-structured prompts that elicit high-quality responses. The framework is available as an open-source Python library with comprehensive documentation.
 
