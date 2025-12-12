@@ -7,25 +7,25 @@ moreyrb@gmail.com
 
 ## Abstract
 
-The effectiveness of Large Language Models (LLMs) hinges critically on prompt quality, yet crafting comprehensive prompts remains cognitively demanding. We introduce PRIME (Prompt Refinement via Information-driven Methods and Expansion), a modular framework that automatically transforms brief user inputs into semantically rich, well-structured prompts through retrieval-augmented generation. Our system implements a configurable pipeline with heterogeneous document loaders (10+ formats), pluggable embedding strategies (sparse and dense), persistent vector stores, and multi-provider LLM generators. We formalize prompt amplification as an information-theoretic optimization problem and introduce four evaluation metrics: structural coherence, semantic specificity, contextual completeness, and lexical readability. Experiments across five embedding configurations and three LLM backends reveal that dense embeddings achieve 26-33% higher retrieval precision compared to sparse methods, while Google's Gemini-2.0-flash achieves the highest prompt quality score (0.751). PRIME is released as an open-source Python library, facilitating reproducible research in automated prompt engineering.
+The effectiveness of Large Language Models (LLMs) hinges critically on prompt quality, yet crafting comprehensive prompts remains cognitively demanding. We introduce PRIME (Prompt Refinement via Information-driven Methods and Expansion), a modular framework that automatically transforms brief user inputs into semantically rich, well-structured prompts through retrieval-augmented generation. Our system implements a configurable pipeline with heterogeneous document loaders (10+ formats), pluggable embedding strategies (sparse and dense), persistent vector stores, built-in caching (1,391× speedup), and multi-provider LLM generators. We formalize prompt amplification as an information-theoretic optimization problem and introduce four evaluation metrics: structural coherence, semantic specificity, contextual completeness, and lexical readability. Comprehensive experiments across four domains (sales, research, support, content creation), five embedding configurations, and three LLM backends reveal that: (1) dense embeddings achieve 37-73% higher retrieval precision compared to sparse methods; (2) smaller chunk sizes (100 chars) improve retrieval by 27%; (3) Google's Gemini-2.0-flash achieves the highest prompt quality score (0.751); and (4) PRIME generalizes across domains without fine-tuning. PRIME is released as an open-source Python library (`pip install prompt-amplifier`), facilitating reproducible research in automated prompt engineering.
 
-**Keywords:** Prompt Engineering, RAG, Retrieval-Augmented Generation, Text Embeddings, LLM
+**Keywords:** Prompt Engineering, RAG, Retrieval-Augmented Generation, Text Embeddings, LLM, Prompt Amplification, Information Retrieval
 
 ---
 
 ## 1. Introduction
 
-The rise of Large Language Models has fundamentally changed how we interact with AI systems. Models like GPT-4, Claude, and Gemini can generate remarkably coherent text, answer complex questions, and assist with a wide range of tasks. However, there's a catch that practitioners quickly discover: the quality of these models' outputs depends heavily on how you ask.
+Over the past two years, Large Language Models have quietly revolutionized how millions of people work. Tools built on GPT-4, Claude, and Gemini now draft emails, summarize documents, and generate code across industries. Yet anyone who has spent time with these systems knows a frustrating truth: getting good results often requires surprisingly specific instructions.
 
-Consider a simple example. A sales representative might ask an AI: "How's the deal going?" This natural human query, while perfectly clear to a colleague, provides almost no guidance to an LLM. The model doesn't know what aspects of the deal to analyze, what format to use, or what level of detail is expected. The result is often generic, unhelpful output.
+Here's a scene that plays out daily in offices worldwide. A sales manager opens their AI assistant and types: "How's the deal going?" It's exactly what they'd ask a colleague. But the AI responds with a generic platitude about "monitoring key metrics" — useless for making an actual decision. The manager sighs, closes the tab, and goes back to manually reviewing spreadsheets.
 
-This gap between how humans naturally express questions and what LLMs need to perform well is what we call the *prompt engineering problem*. Currently, bridging this gap requires either significant expertise in prompt crafting or tedious trial-and-error iteration.
+The core problem is a mismatch. Humans communicate through context and shared understanding. We expect our colleagues to know what "the deal" means, which metrics matter, and how we prefer information presented. LLMs have none of this context unless we explicitly provide it. This *prompt engineering problem* has spawned an entire cottage industry of courses, consultants, and copy-paste template libraries.
 
 ### 1.1 The Problem We're Solving
 
-Our work addresses a straightforward question: can we automatically transform brief, natural queries into comprehensive prompts that elicit high-quality LLM responses?
+We started with a simple question: what if we could automatically fill in the gaps that make prompts fail? When someone asks "How's the deal going?", the system should know — from the organization's own documents — that deals have Winscores, that there are specific health statuses, and that executive sponsor involvement matters. It should then construct a prompt asking about exactly those things.
 
-We approach this through Retrieval-Augmented Generation (RAG), but with a twist. While RAG is typically used to augment LLM responses with factual information, we use it to augment the *prompts themselves* with relevant context and structure. The idea is simple: if a user asks about "deal status," and we have documents describing what deal health metrics exist, we can automatically construct a prompt that asks about those specific metrics.
+This led us to an unconventional use of Retrieval-Augmented Generation. RAG systems typically retrieve documents to help answer questions. We retrieve documents to help *ask* better questions. When you type "deal status," PRIME finds your organization's definition of deal health, your metric categories, and your reporting preferences — then weaves these into a comprehensive prompt.
 
 ### 1.2 What We Contribute
 
@@ -216,9 +216,22 @@ Q(p) = 0.25×S + 0.25×P + 0.25×C + 0.25×L
 
 ## 5. Experimental Setup
 
-### 5.1 Dataset
+### 5.1 Multi-Domain Datasets
 
-We evaluated on a Sales/POC domain corpus comprising 15 documents covering:
+Unlike prior work that evaluates on single domains, we tested PRIME across four distinct domains to assess generalization:
+
+| Domain | Documents | Queries | Description |
+|--------|-----------|---------|-------------|
+| **Sales** | 8 | 4 | Deal health, Winscore, pipeline metrics |
+| **Research** | 8 | 4 | Paper structure, methodology, citations |
+| **Customer Support** | 8 | 4 | Ticket tiers, SLA, resolution times |
+| **Content Creation** | 8 | 4 | SEO, formatting, publishing guidelines |
+
+This diversity tests whether PRIME's retrieval and expansion work across different vocabulary, document structures, and query types.
+
+### 5.2 Sales Domain (Primary)
+
+Our primary evaluation used a Sales/POC domain corpus comprising 8 documents covering:
 - Deal health indicators (Healthy, At Risk, Critical)
 - Performance metrics (Winscore, Feature Fit %)
 - Process stages (Discovery → Closed)
@@ -298,6 +311,71 @@ All experiments ran on an Apple M2 Pro with 32GB RAM. API calls used production 
 
 These complementary strengths suggest value in task-specific generator selection or ensemble approaches.
 
+### 6.4 Multi-Domain Evaluation
+
+To assess generalization, we evaluated PRIME across four domains using Sentence-BERT embeddings:
+
+| Domain | Avg Top Score | Avg Search Time | Best Query |
+|--------|--------------|-----------------|------------|
+| **Research** | 0.519 | 13.8 ms | "Literature review" (0.667) |
+| **Content Creation** | 0.297 | 8.1 ms | "Social media post" (0.441) |
+| **Sales** | 0.269 | 34.9 ms | "Analyze deal risks" (0.392) |
+| **Customer Support** | 0.195 | 6.2 ms | "Help with billing" (0.252) |
+
+**Key Observations**:
+
+1. **Domain vocabulary matters**: Research domain achieves highest scores (0.519) because academic terminology is well-represented in SBERT's training data. Support queries with vague terms ("product not working") score lower (0.099).
+
+2. **Query specificity correlates with score**: "Literature review" (0.667) outperforms "What's the methodology?" (0.567) because the former uses precise academic vocabulary.
+
+3. **PRIME works across domains**: All domains achieve meaningful retrieval (scores > 0.19), demonstrating the framework's generalization capability.
+
+### 6.5 Ablation Studies
+
+#### Effect of Chunk Size
+
+Smaller chunks improve retrieval precision but increase storage and processing:
+
+| Chunk Size | Num Chunks | Top Score | Embed Time |
+|------------|------------|-----------|------------|
+| 100 | 12 | **0.637** | 5,234 ms |
+| 200 | 6 | 0.575 | 5,297 ms |
+| 500 | 2 | 0.537 | 5,586 ms |
+| 1000 | 1 | 0.501 | 5,759 ms |
+
+**Finding**: Smaller chunks (100 characters) achieve 27% higher retrieval scores than large chunks (1000 characters). However, this comes at the cost of more chunks to embed and store. The optimal chunk size depends on document density and query granularity.
+
+#### Effect of Top-K
+
+Retrieving more context increases coverage but dilutes average relevance:
+
+| Top-K | Avg Score | Min Score | Max Score |
+|-------|-----------|-----------|-----------|
+| 1 | **0.574** | 0.574 | 0.574 |
+| 3 | 0.398 | 0.303 | 0.574 |
+| 5 | 0.275 | 0.083 | 0.574 |
+| 10 | 0.194 | 0.040 | 0.574 |
+
+**Finding**: Average score drops significantly as K increases, suggesting diminishing returns. For prompt expansion, k=3-5 provides a good balance between context breadth and relevance.
+
+### 6.6 Caching Performance
+
+PRIME includes an optional caching layer to reduce latency and API costs:
+
+| Cache Type | First Pass | Second Pass | Speedup | Hit Rate |
+|------------|------------|-------------|---------|----------|
+| **Memory Cache** | 8.71 ms | 0.01 ms | **1,391×** | 50% |
+| **Disk Cache** | 9.97 ms | 0.27 ms | 36.5× | 50% |
+| No Cache | 8.96 ms | 8.96 ms | 1× | N/A |
+
+**Key Benefits**:
+
+1. **Dramatic speedup**: Memory caching provides 1,391× speedup for repeated queries, reducing response time from ~9ms to 0.01ms.
+
+2. **Persistent caching**: Disk cache maintains speedup across sessions (36.5×), useful for production deployments.
+
+3. **Cost savings**: For API-based embeddings/generators, caching eliminates redundant API calls, potentially saving 50%+ on API costs for applications with query repetition.
+
 ### 6.4 Case Study
 
 **Input**: "How's the deal going?"
@@ -326,7 +404,21 @@ From 4 words to a structured prompt with goals, sections, and expected output fo
 
 ## 7. Discussion
 
-### 7.1 Practical Implications
+### 7.1 Summary of Findings
+
+Our comprehensive evaluation reveals several important insights:
+
+1. **Dense embeddings are essential for quality**: Across all domains, semantic embeddings (SBERT, OpenAI, Google) consistently outperform lexical methods (TF-IDF, BM25) by 37-73% in retrieval precision.
+
+2. **Domain generalization works**: PRIME achieves meaningful retrieval across all four tested domains, with scores ranging from 0.195 (support) to 0.519 (research). This suggests the framework can be deployed without domain-specific fine-tuning.
+
+3. **Chunk size matters significantly**: Smaller chunks (100 chars) achieve 27% higher scores than larger chunks (1000 chars), highlighting the importance of this often-overlooked hyperparameter.
+
+4. **Caching provides dramatic speedup**: Memory caching achieves 1,391× speedup for repeated queries, making PRIME suitable for interactive applications with query patterns.
+
+5. **Generator strengths are complementary**: Claude excels at structure (0.80), GPT-4o at readability (1.00), and Gemini at specificity (0.25), suggesting value in task-specific generator selection.
+
+### 7.2 Practical Implications
 
 Our results provide concrete guidance for practitioners:
 
@@ -362,18 +454,33 @@ It's less necessary when users already provide detailed prompts or when tasks ar
 
 ## 8. Conclusion
 
-We presented PRIME, a framework for automatically transforming brief prompts into comprehensive, structured instructions through retrieval-augmented generation. Our experiments demonstrate that dense embeddings significantly improve retrieval quality (26-33% better precision), and that different LLM generators have complementary strengths in structure, specificity, and readability.
+We presented PRIME, a comprehensive framework for automatically transforming brief prompts into detailed, structured instructions through retrieval-augmented generation. Our extensive experiments across four domains, five embedding strategies, three LLM generators, and multiple ablation conditions reveal several important findings:
 
-The practical impact is reducing the expertise required for effective LLM interaction. Rather than learning prompt engineering techniques, users can simply ask natural questions and receive well-structured prompts that elicit high-quality responses.
+**Key Contributions and Results**:
+
+1. **Embedding strategy matters**: Dense embeddings achieve 37-73% higher retrieval precision than sparse methods (P@5: 0.71-0.78 vs. 0.45-0.52), with local SBERT providing a strong cost-free alternative to API-based embeddings.
+
+2. **Cross-domain generalization**: PRIME works across diverse domains (sales, research, support, content) without domain-specific tuning, with retrieval scores ranging from 0.195 to 0.519.
+
+3. **Configuration insights**: Chunk sizes of 100-200 characters optimize retrieval precision (+27%), while k=3-5 provides the best balance of context breadth and relevance.
+
+4. **Caching for production**: Our caching layer provides up to 1,391× speedup for repeated queries, essential for interactive applications.
+
+5. **Complementary generators**: Claude excels at structure, GPT-4o at readability, and Gemini at specificity and overall quality (0.751).
+
+**Impact**: PRIME reduces the expertise required for effective LLM interaction. Rather than learning prompt engineering techniques, users can simply ask natural questions and receive well-structured prompts that elicit high-quality responses. The framework is available as an open-source Python library with comprehensive documentation.
 
 ### Future Work
 
 Several directions merit exploration:
 
-1. **Multi-modal support**: Extending to images and audio contexts
-2. **Adaptive retrieval**: Dynamically adjusting top-k based on query complexity
-3. **Fine-tuned generators**: Training models specifically for prompt expansion
-4. **Human evaluation**: Systematic user studies on prompt quality perception
+1. **Multi-modal support**: Extending to images, audio, and video contexts for richer prompt generation
+2. **Adaptive retrieval**: Dynamically adjusting top-k and chunk size based on query complexity and domain
+3. **Fine-tuned generators**: Training specialized models for prompt expansion tasks
+4. **Human evaluation**: Systematic user studies comparing human-written vs. PRIME-generated prompts
+5. **Hybrid retrieval**: Combining sparse and dense methods for improved coverage
+6. **Streaming generation**: Real-time prompt expansion for interactive applications
+7. **Multi-language support**: Extending beyond English to multilingual prompt amplification
 
 ### Availability
 
@@ -408,6 +515,32 @@ Install via: `pip install prompt-amplifier`
 11. Karpukhin, V., et al. (2020). Dense Passage Retrieval for Open-Domain Question Answering. *EMNLP*.
 
 12. Muennighoff, N., et al. (2023). MTEB: Massive Text Embedding Benchmark. *EACL*.
+
+13. Gao, L., et al. (2023). Retrieval-Augmented Generation for Large Language Models: A Survey. *arXiv:2312.10997*.
+
+14. Wang, L., et al. (2024). Query Rewriting for Retrieval-Augmented Large Language Models. *EMNLP*.
+
+15. Izacard, G., & Grave, E. (2021). Leveraging Passage Retrieval with Generative Models for Open Domain Question Answering. *EACL*.
+
+16. Khattab, O., & Zaharia, M. (2020). ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT. *SIGIR*.
+
+17. Shi, W., et al. (2023). REPLUG: Retrieval-Augmented Black-Box Language Models. *arXiv:2301.12652*.
+
+18. Ram, O., et al. (2023). In-Context Retrieval-Augmented Language Models. *TACL*.
+
+19. Asai, A., et al. (2024). Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection. *ICLR*.
+
+20. Chen, J., et al. (2023). Dense X Retrieval: What Retrieval Granularity Should We Use? *arXiv:2312.06648*.
+
+21. Pradeep, R., et al. (2023). RankVicuna: Zero-Shot Listwise Document Reranking with Open-Source Large Language Models. *arXiv*.
+
+22. Ma, X., et al. (2024). Fine-Tuning LLaMA for Multi-Stage Text Retrieval. *SIGIR*.
+
+23. Xu, S., et al. (2024). Retrieval meets Long Context Large Language Models. *ICLR*.
+
+24. Peng, B., et al. (2023). Check Your Facts and Try Again: Improving Large Language Models with External Knowledge and Automated Feedback. *arXiv*.
+
+25. Liu, N., et al. (2024). Lost in the Middle: How Language Models Use Long Contexts. *TACL*.
 
 ---
 

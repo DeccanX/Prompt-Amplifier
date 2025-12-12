@@ -1,0 +1,240 @@
+{
+  "timestamp": "2025-12-13T00:05:49.620942",
+  "domain_experiments": {
+    "sales": {
+      "domain": "sales",
+      "embedder": "sbert",
+      "num_documents": 8,
+      "num_queries": 4,
+      "query_results": [
+        {
+          "query": "How's the deal going?",
+          "search_time_ms": 69.84,
+          "num_results": 3,
+          "top_score": 0.198,
+          "avg_score": 0.193
+        },
+        {
+          "query": "Check pipeline health",
+          "search_time_ms": 29.19,
+          "num_results": 3,
+          "top_score": 0.314,
+          "avg_score": 0.268
+        },
+        {
+          "query": "What's the forecast?",
+          "search_time_ms": 32.55,
+          "num_results": 3,
+          "top_score": 0.17,
+          "avg_score": 0.161
+        },
+        {
+          "query": "Analyze deal risks",
+          "search_time_ms": 8.14,
+          "num_results": 3,
+          "top_score": 0.392,
+          "avg_score": 0.344
+        }
+      ],
+      "avg_search_time_ms": 34.93,
+      "avg_top_score": 0.269
+    },
+    "research": {
+      "domain": "research",
+      "embedder": "sbert",
+      "num_documents": 8,
+      "num_queries": 4,
+      "query_results": [
+        {
+          "query": "Summarize the paper",
+          "search_time_ms": 21.31,
+          "num_results": 3,
+          "top_score": 0.509,
+          "avg_score": 0.432
+        },
+        {
+          "query": "What's the methodology?",
+          "search_time_ms": 8.3,
+          "num_results": 3,
+          "top_score": 0.567,
+          "avg_score": 0.518
+        },
+        {
+          "query": "Key contributions",
+          "search_time_ms": 19.09,
+          "num_results": 3,
+          "top_score": 0.332,
+          "avg_score": 0.304
+        },
+        {
+          "query": "Literature review",
+          "search_time_ms": 6.57,
+          "num_results": 3,
+          "top_score": 0.667,
+          "avg_score": 0.463
+        }
+      ],
+      "avg_search_time_ms": 13.82,
+      "avg_top_score": 0.519
+    },
+    "customer_support": {
+      "domain": "customer_support",
+      "embedder": "sbert",
+      "num_documents": 8,
+      "num_queries": 4,
+      "query_results": [
+        {
+          "query": "Help with billing",
+          "search_time_ms": 6.87,
+          "num_results": 3,
+          "top_score": 0.252,
+          "avg_score": 0.197
+        },
+        {
+          "query": "Product not working",
+          "search_time_ms": 5.74,
+          "num_results": 3,
+          "top_score": 0.099,
+          "avg_score": 0.072
+        },
+        {
+          "query": "How to upgrade",
+          "search_time_ms": 6.38,
+          "num_results": 3,
+          "top_score": 0.193,
+          "avg_score": 0.167
+        },
+        {
+          "query": "Cancel subscription",
+          "search_time_ms": 6.02,
+          "num_results": 3,
+          "top_score": 0.236,
+          "avg_score": 0.157
+        }
+      ],
+      "avg_search_time_ms": 6.25,
+      "avg_top_score": 0.195
+    },
+    "content_creation": {
+      "domain": "content_creation",
+      "embedder": "sbert",
+      "num_documents": 8,
+      "num_queries": 4,
+      "query_results": [
+        {
+          "query": "Write about AI",
+          "search_time_ms": 8.97,
+          "num_results": 3,
+          "top_score": 0.189,
+          "avg_score": 0.172
+        },
+        {
+          "query": "Create marketing copy",
+          "search_time_ms": 7.65,
+          "num_results": 3,
+          "top_score": 0.222,
+          "avg_score": 0.169
+        },
+        {
+          "query": "Social media post",
+          "search_time_ms": 8.49,
+          "num_results": 3,
+          "top_score": 0.441,
+          "avg_score": 0.392
+        },
+        {
+          "query": "Newsletter draft",
+          "search_time_ms": 7.14,
+          "num_results": 3,
+          "top_score": 0.335,
+          "avg_score": 0.209
+        }
+      ],
+      "avg_search_time_ms": 8.06,
+      "avg_top_score": 0.297
+    }
+  },
+  "ablation_chunk_size": [
+    {
+      "chunk_size": 100,
+      "num_chunks": 12,
+      "embed_time_ms": 5233.8,
+      "search_time_ms": 8.0,
+      "top_score": 0.637
+    },
+    {
+      "chunk_size": 200,
+      "num_chunks": 6,
+      "embed_time_ms": 5296.9,
+      "search_time_ms": 8.2,
+      "top_score": 0.575
+    },
+    {
+      "chunk_size": 500,
+      "num_chunks": 2,
+      "embed_time_ms": 5586.4,
+      "search_time_ms": 8.5,
+      "top_score": 0.537
+    },
+    {
+      "chunk_size": 1000,
+      "num_chunks": 1,
+      "embed_time_ms": 5759.0,
+      "search_time_ms": 7.7,
+      "top_score": 0.501
+    }
+  ],
+  "ablation_top_k": [
+    {
+      "top_k": 1,
+      "actual_results": 1,
+      "search_time_ms": 9.61,
+      "avg_score": 0.574,
+      "min_score": 0.574,
+      "max_score": 0.574
+    },
+    {
+      "top_k": 3,
+      "actual_results": 3,
+      "search_time_ms": 8.37,
+      "avg_score": 0.398,
+      "min_score": 0.303,
+      "max_score": 0.574
+    },
+    {
+      "top_k": 5,
+      "actual_results": 5,
+      "search_time_ms": 8.17,
+      "avg_score": 0.275,
+      "min_score": 0.083,
+      "max_score": 0.574
+    },
+    {
+      "top_k": 10,
+      "actual_results": 8,
+      "search_time_ms": 8.33,
+      "avg_score": 0.194,
+      "min_score": 0.04,
+      "max_score": 0.574
+    }
+  ],
+  "caching_benchmark": {
+    "memory_cache": {
+      "avg_time_first_pass_ms": 8.71,
+      "avg_time_second_pass_ms": 0.01,
+      "speedup": 1391.0,
+      "hit_rate": 0.5,
+      "total_hits": 4,
+      "total_misses": 4
+    },
+    "disk_cache": {
+      "avg_time_first_pass_ms": 9.97,
+      "avg_time_second_pass_ms": 0.27,
+      "speedup": 36.5,
+      "hit_rate": 0.5
+    },
+    "no_cache": {
+      "avg_time_ms": 8.96
+    }
+  }
+}
