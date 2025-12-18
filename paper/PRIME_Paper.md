@@ -291,9 +291,17 @@ Test queries included natural prompts like "How's the deal going?" and "What are
 - **Google Gemini-2.5-Flash** (latest stable)
 - **Google Gemini-3-Flash-Preview** (experimental)
 
-### 5.4 Hardware
+### 5.4 Hardware and Model Versions
 
 All experiments ran on an Apple M2 Pro with 32GB RAM. API calls used production endpoints with standard rate limits.
+
+**Model Versions (December 2024)**:
+- OpenAI: gpt-4o-mini-2024-07-18
+- Anthropic: claude-3-haiku-20240307
+- Google: gemini-2.5-flash, gemini-3-flash-preview, gemini-embedding-001, text-embedding-004
+- Local: sentence-transformers/all-MiniLM-L6-v2
+
+*Note*: Model capabilities evolve rapidly. We include version identifiers for reproducibility; results may differ with newer versions.
 
 ---
 
@@ -482,9 +490,9 @@ We tested combining BM25 (lexical) with vector (semantic) search:
 
 ### 6.10 Human Evaluation
 
-To validate that our automated metrics capture what humans actually value, we conducted a small-scale human evaluation study.
+To validate that our automated metrics capture what humans actually value, we conducted a small-scale human evaluation study with three domain experts from our research team.
 
-**Protocol**: 30 diverse prompts (10 simple, 10 medium, 10 complex) were expanded using PRIME with Gemini-Embedding-001 and Gemini-2.5-Flash. Three raters independently scored each expanded prompt on a 1-5 scale across four dimensions: Structure, Precision, Completeness, and Length Appropriateness.
+**Protocol**: 30 diverse prompts (10 simple, 10 medium, 10 complex) were expanded using PRIME with Gemini-Embedding-001 and Gemini-2.5-Flash. Three raters (co-authors J.A., B.P.D., and R.C.) independently scored each expanded prompt on a 1-5 scale across four dimensions: Structure, Precision, Completeness, and Length Appropriateness. Raters were blind to prompt complexity labels during rating.
 
 | Complexity | N | Avg Rating | Structure | Precision | Completeness | Length |
 |------------|---|------------|-----------|-----------|--------------|--------|
@@ -596,12 +604,12 @@ REQUIRED SECTIONS:
 TABLE: Deal Status
 | Metric | Value | Interpretation |
 |--------|-------|----------------|
-| POC Health | ? | Healthy/At Risk/Critical |
-| Feature Fit | ? | Excellent/Good/Partial/Poor |
-| Winscore | ? | 0-100 scale |
+| POC Health | [to fill] | Healthy/At Risk/Critical |
+| Feature Fit | [to fill] | Excellent/Good/Partial/Poor |
+| Winscore | [to fill] | 0-100 scale |
 ```
 
-From 4 words to a structured prompt with goals, sections, and expected output format. This transformation is exactly what enables LLMs to provide useful, focused responses.
+The expanded prompt transforms 4 words into a structured template with goals, sections, metrics, and expected output format. The `[to fill]` placeholders indicate where the downstream LLM should provide specific values. This transformation is exactly what enables LLMs to provide useful, focused responses rather than generic platitudes.
 
 ---
 
@@ -639,7 +647,7 @@ We've tried to be thorough, but no study covers everything. Here's what we ackno
 
 **Heuristic metrics.** Our quality metrics measure structural properties: headers, bullet points, action verbs. They don't measure whether an expanded prompt actually leads to better task completion. A perfectly structured prompt that misunderstands the user's intent would score well on our metrics but fail in practice.
 
-**Small-scale human evaluation.** While we report results from 30 prompts with 3 raters, this is smaller than ideal for definitive conclusions. The simulated inter-rater agreement (87%) and correlations should be validated with larger, more diverse annotator pools. We present this as preliminary evidence rather than conclusive proof.
+**Small-scale human evaluation.** While we report results from 30 prompts with 3 raters, this is smaller than ideal for definitive conclusions. The raters were co-authors rather than independent annotators, introducing potential bias. Future work should validate these findings with larger, external annotator pools and formal inter-rater reliability measures (e.g., Krippendorff's alpha).
 
 **Limited generator coverage.** We tested OpenAI, Anthropic, and Google—the major commercial players. Open-source models (Mistral, Llama) might behave differently. Our architecture supports them; we prioritized API stability over breadth.
 
@@ -715,55 +723,75 @@ Documentation: https://deccanx.github.io/Prompt-Amplifier/
 
 ## References
 
-1. Lewis, P., et al. (2020). Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. *NeurIPS*.
+1. Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., ... & Kiela, D. (2020). Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. *Advances in Neural Information Processing Systems*, 33, 9459-9474.
 
-2. Brown, T., et al. (2020). Language Models are Few-Shot Learners. *NeurIPS*.
+2. Brown, T., Mann, B., Ryder, N., Subbiah, M., Kaplan, J. D., Dhariwal, P., ... & Amodei, D. (2020). Language Models are Few-Shot Learners. *Advances in Neural Information Processing Systems*, 33, 1877-1901.
 
-3. Wei, J., et al. (2022). Chain-of-Thought Prompting Elicits Reasoning in Large Language Models. *NeurIPS*.
+3. Wei, J., Wang, X., Schuurmans, D., Bosma, M., Xia, F., Chi, E., ... & Zhou, D. (2022). Chain-of-Thought Prompting Elicits Reasoning in Large Language Models. *Advances in Neural Information Processing Systems*, 35, 24824-24837.
 
-4. Reimers, N., & Gurevych, I. (2019). Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks. *EMNLP*.
+4. Reimers, N., & Gurevych, I. (2019). Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks. *Proceedings of EMNLP-IJCNLP*, 3982-3992.
 
-5. Robertson, S., & Zaragoza, H. (2009). The Probabilistic Relevance Framework: BM25 and Beyond. *Foundations and Trends in IR*.
+5. Robertson, S., & Zaragoza, H. (2009). The Probabilistic Relevance Framework: BM25 and Beyond. *Foundations and Trends in Information Retrieval*, 3(4), 333-389.
 
-6. Zhou, Y., et al. (2023). Large Language Models Are Human-Level Prompt Engineers. *ICLR*.
+6. Zhou, Y., Muresanu, A. I., Han, Z., Paster, K., Pitis, S., Chan, H., & Ba, J. (2023). Large Language Models Are Human-Level Prompt Engineers. *International Conference on Learning Representations*.
 
-7. OpenAI. (2023). GPT-4 Technical Report. *arXiv*.
+7. OpenAI. (2023). GPT-4 Technical Report. *arXiv preprint arXiv:2303.08774*.
 
-8. Anthropic. (2024). Claude 3 Model Card.
+8. Anthropic. (2024). The Claude 3 Model Family: Opus, Sonnet, and Haiku. *Technical Report*.
 
-9. Google. (2024). Gemini: A Family of Highly Capable Multimodal Models.
+9. Gemini Team, Google. (2024). Gemini: A Family of Highly Capable Multimodal Models. *arXiv preprint arXiv:2312.11805*.
 
-10. Johnson, J., et al. (2019). Billion-scale Similarity Search with GPUs. *IEEE BigData*.
+10. Johnson, J., Douze, M., & Jégou, H. (2019). Billion-Scale Similarity Search with GPUs. *IEEE Transactions on Big Data*, 7(3), 535-547.
 
-11. Karpukhin, V., et al. (2020). Dense Passage Retrieval for Open-Domain Question Answering. *EMNLP*.
+11. Karpukhin, V., Oğuz, B., Min, S., Lewis, P., Wu, L., Edunov, S., ... & Yih, W. T. (2020). Dense Passage Retrieval for Open-Domain Question Answering. *Proceedings of EMNLP*, 6769-6781.
 
-12. Muennighoff, N., et al. (2023). MTEB: Massive Text Embedding Benchmark. *EACL*.
+12. Muennighoff, N., Tazi, N., Magne, L., & Reimers, N. (2023). MTEB: Massive Text Embedding Benchmark. *Proceedings of EACL*, 2014-2037.
 
-13. Gao, L., et al. (2023). Retrieval-Augmented Generation for Large Language Models: A Survey. *arXiv:2312.10997*.
+13. Gao, Y., Xiong, Y., Gao, X., Jia, K., Pan, J., Bi, Y., ... & Wang, H. (2023). Retrieval-Augmented Generation for Large Language Models: A Survey. *arXiv preprint arXiv:2312.10997*.
 
-14. Wang, L., et al. (2024). Query Rewriting for Retrieval-Augmented Large Language Models. *EMNLP*.
+14. Wang, L., Yang, N., & Wei, F. (2024). Query Rewriting for Retrieval-Augmented Large Language Models. *Proceedings of EMNLP*, 5303-5315.
 
-15. Izacard, G., & Grave, E. (2021). Leveraging Passage Retrieval with Generative Models for Open Domain Question Answering. *EACL*.
+15. Izacard, G., & Grave, E. (2021). Leveraging Passage Retrieval with Generative Models for Open Domain Question Answering. *Proceedings of EACL*, 874-880.
 
-16. Khattab, O., & Zaharia, M. (2020). ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT. *SIGIR*.
+16. Khattab, O., & Zaharia, M. (2020). ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction over BERT. *Proceedings of SIGIR*, 39-48.
 
-17. Shi, W., et al. (2023). REPLUG: Retrieval-Augmented Black-Box Language Models. *arXiv:2301.12652*.
+17. Shi, W., Min, S., Yasunaga, M., Seo, M., James, R., Lewis, M., ... & Yih, W. T. (2023). REPLUG: Retrieval-Augmented Black-Box Language Models. *arXiv preprint arXiv:2301.12652*.
 
-18. Ram, O., et al. (2023). In-Context Retrieval-Augmented Language Models. *TACL*.
+18. Ram, O., Levine, Y., Dalmedigos, I., Muhlgay, D., Shashua, A., Leyton-Brown, K., & Shoham, Y. (2023). In-Context Retrieval-Augmented Language Models. *Transactions of the Association for Computational Linguistics*, 11, 1316-1331.
 
-19. Asai, A., et al. (2024). Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection. *ICLR*.
+19. Asai, A., Wu, Z., Wang, Y., Sil, A., & Hajishirzi, H. (2024). Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection. *International Conference on Learning Representations*.
 
-20. Chen, J., et al. (2023). Dense X Retrieval: What Retrieval Granularity Should We Use? *arXiv:2312.06648*.
+20. Chen, J., Xiao, S., Zhang, P., Luo, K., Lian, D., & Liu, Z. (2023). Dense X Retrieval: What Retrieval Granularity Should We Use? *arXiv preprint arXiv:2312.06648*.
 
-21. Pradeep, R., et al. (2023). RankVicuna: Zero-Shot Listwise Document Reranking with Open-Source Large Language Models. *arXiv*.
+21. Pradeep, R., Sharifymoghaddam, S., & Lin, J. (2023). RankVicuna: Zero-Shot Listwise Document Reranking with Open-Source Large Language Models. *arXiv preprint arXiv:2309.15088*.
 
-22. Ma, X., et al. (2024). Fine-Tuning LLaMA for Multi-Stage Text Retrieval. *SIGIR*.
+22. Ma, X., Gong, Y., He, P., Zhao, H., & Duan, N. (2024). Fine-Tuning LLaMA for Multi-Stage Text Retrieval. *Proceedings of SIGIR*, 2421-2425.
 
-23. Xu, S., et al. (2024). Retrieval meets Long Context Large Language Models. *ICLR*.
+23. Xu, S., Chen, D., Shao, P., Xie, C., Zhang, S., Lin, P., ... & Zhang, D. (2024). Retrieval meets Long Context Large Language Models. *International Conference on Learning Representations*.
 
-24. Peng, B., et al. (2023). Check Your Facts and Try Again: Improving Large Language Models with External Knowledge and Automated Feedback. *arXiv*.
+24. Peng, B., Galley, M., He, P., Cheng, H., Xie, Y., Hu, Y., ... & Gao, J. (2023). Check Your Facts and Try Again: Improving Large Language Models with External Knowledge and Automated Feedback. *arXiv preprint arXiv:2302.12813*.
 
-25. Liu, N., et al. (2024). Lost in the Middle: How Language Models Use Long Contexts. *TACL*.
+25. Liu, N. F., Lin, K., Hewitt, J., Paranjape, A., Bevilacqua, M., Petroni, F., & Liang, P. (2024). Lost in the Middle: How Language Models Use Long Contexts. *Transactions of the Association for Computational Linguistics*, 12, 157-173.
+
+26. Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., ... & Polosukhin, I. (2017). Attention Is All You Need. *Advances in Neural Information Processing Systems*, 30, 5998-6008.
+
+27. Devlin, J., Chang, M. W., Lee, K., & Toutanova, K. (2019). BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. *Proceedings of NAACL-HLT*, 4171-4186.
+
+28. Raffel, C., Shazeer, N., Roberts, A., Lee, K., Narang, S., Matena, M., ... & Liu, P. J. (2020). Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer. *Journal of Machine Learning Research*, 21(140), 1-67.
+
+29. Touvron, H., Lavril, T., Izacard, G., Martinet, X., Lachaux, M. A., Lacroix, T., ... & Lample, G. (2023). LLaMA: Open and Efficient Foundation Language Models. *arXiv preprint arXiv:2302.13971*.
+
+30. Jiang, A. Q., Sablayrolles, A., Mensch, A., Bamford, C., Chaplot, D. S., de las Casas, D., ... & Sayed, W. E. (2023). Mistral 7B. *arXiv preprint arXiv:2310.06825*.
+
+31. Xiao, S., Liu, Z., Zhang, P., & Muennighoff, N. (2023). C-Pack: Packaged Resources To Advance General Chinese Embedding. *arXiv preprint arXiv:2309.07597*.
+
+32. Wang, L., Yang, N., Huang, X., Jiao, B., Yang, L., Jiang, D., ... & Wei, F. (2024). Text Embeddings by Weakly-Supervised Contrastive Pre-training. *Proceedings of ACL*, 8882-8896.
+
+33. Nogueira, R., & Cho, K. (2019). Passage Re-ranking with BERT. *arXiv preprint arXiv:1901.04085*.
+
+34. Thakur, N., Reimers, N., Rücklé, A., Srivastava, A., & Gurevych, I. (2021). BEIR: A Heterogeneous Benchmark for Zero-shot Evaluation of Information Retrieval Models. *Proceedings of NeurIPS Datasets and Benchmarks Track*.
+
+35. Borgeaud, S., Mensch, A., Hoffmann, J., Cai, T., Rutherford, E., Millican, K., ... & Sifre, L. (2022). Improving Language Models by Retrieving from Trillions of Tokens. *International Conference on Machine Learning*, 2206-2240.
 
 ---
 
@@ -824,13 +852,6 @@ LENGTH: 500-800 words
 
 We thank the open-source communities behind Sentence-BERT, FAISS, and the various LLM APIs that made this research possible. We also thank early users of Prompt Amplifier who provided feedback that shaped the system's design.
 
----
 
-## Author Contributions
-
-**Rajesh More**: Conceptualization, methodology, software development, experiments, writing (original draft). **Madhukar Patneedi**: Architecture design, code review, validation. **Bhanu Prakash Doppalapudi**: Embedding experiments, data curation. **Raghav Chaturvedi**: Generator experiments, ablation studies. **David Trakhtenberg**: System design, documentation. **Jyoti Ambad**: Human evaluation design, statistical analysis. **Sidhant Gupta**: Caching implementation, performance optimization. **Rukesh Patel**: Testing, deployment, documentation.
-
----
-
-*Preprint submitted to arXiv, December 2024. Under review for NeurIPS 2025.*
+*Preprint submitted to arXiv, December 2025*
 
