@@ -2,7 +2,9 @@
 % A Modular Framework for Context-Aware Prompt Amplification Using RAG
 
 \documentclass[11pt,a4paper]{article}
-\usepackage[hyperref]{acl2023}
+
+% Standard packages (no external dependencies)
+\usepackage[margin=1in]{geometry}
 \usepackage{times}
 \usepackage{latexsym}
 \usepackage{amsmath}
@@ -19,6 +21,12 @@
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{url}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{float}
+
+% PGFPlots compatibility
+\pgfplotsset{compat=1.18}
 
 \usetikzlibrary{shapes.geometric, arrows, positioning, fit, calc}
 
@@ -42,12 +50,14 @@
 \newcommand{\vecspace}{\mathbb{R}^d}
 \newcommand{\simfunc}{\text{sim}}
 
-\title{PRIME: A Modular Framework for Context-Aware Prompt Amplification \\
-Using Retrieval-Augmented Generation and Multi-Strategy Embedding}
+\title{PRIME: Prompt Refinement via Information-driven Methods and Expansion---A Modular Framework for Context-Aware Prompt Amplification}
 
 \author{
-Rajesh More \\
-\texttt{moreyrb@gmail.com}
+Rajesh More$^{1}$, Madhukar Patneedi$^{1}$, Bhanu Prakash Doppalapudi$^{1}$, \\
+Raghav Chaturvedi$^{1}$, David Trakhtenberg$^{1}$, Jyoti Ambad$^{2}$, \\
+Sidhant Gupta$^{1}$, Rukesh Patel$^{1}$ \\[1em]
+$^{1}$CWX Technologies \quad $^{2}$Independent Researcher \\
+\texttt{rajesh.more@cwx.tech}
 }
 
 \begin{document}
@@ -57,7 +67,11 @@ Rajesh More \\
 % ABSTRACT
 %==============================================================================
 \begin{abstract}
-The effectiveness of Large Language Models (LLMs) is fundamentally constrained by the quality of input prompts, yet crafting comprehensive prompts remains a cognitively demanding task requiring domain expertise. We introduce \primesys{} (\textbf{P}rompt \textbf{R}efinement via \textbf{I}nformation-driven \textbf{M}ethods and \textbf{E}xpansion), a novel modular framework that automatically transforms terse user inputs into semantically enriched, structurally coherent prompts through retrieval-augmented generation (RAG). Our system implements a configurable pipeline comprising heterogeneous document loaders supporting 10+ formats, pluggable embedding strategies spanning sparse (TF-IDF, BM25) and dense (Sentence-BERT, OpenAI, Cohere) representations, persistent vector stores (FAISS, ChromaDB), and multi-provider LLM generators. We formalize prompt amplification as an information-theoretic optimization problem and introduce four novel evaluation metrics: \textit{structural coherence} ($\mathcal{S}$), \textit{semantic specificity} ($\mathcal{P}$), \textit{contextual completeness} ($\mathcal{C}$), and \textit{lexical readability} ($\mathcal{L}$). Extensive experiments across 12 embedding configurations and 6 LLM backends demonstrate that dense embeddings achieve 23.4\% higher retrieval precision compared to sparse methods, while hybrid retrieval further improves prompt quality by 8.7\%. Our ablation studies reveal optimal hyperparameters: chunk size of 512 tokens and top-$k$=5 retrieved contexts. \primesys{} is released as an open-source Python library with comprehensive documentation, facilitating reproducible research in automated prompt engineering.
+While Large Language Models (LLMs) have transformed natural language processing, their effectiveness depends critically on prompt quality---a gap that existing work has largely overlooked. Current Retrieval-Augmented Generation (RAG) systems retrieve documents to generate \textit{answers}; we propose a fundamentally different approach: using retrieval to construct \textit{better questions}. This paper introduces \primesys{} (\textbf{P}rompt \textbf{R}efinement via \textbf{I}nformation-driven \textbf{M}ethods and \textbf{E}xpansion), a framework that treats prompt construction as a first-class optimization problem.
+
+\primesys{} implements a modular pipeline with heterogeneous document loaders (10+ formats), pluggable embedding strategies (sparse TF-IDF/BM25 and dense Sentence-BERT/Gemini-Embedding-001/OpenAI), persistent vector stores, and multi-provider LLM generators (GPT-4o, Claude-3, Gemini-2.5-Flash, Gemini-3-Flash-Preview). We formalize prompt amplification mathematically and introduce four novel evaluation metrics: structural coherence ($\mathcal{S}$), semantic specificity ($\mathcal{P}$), contextual completeness ($\mathcal{C}$), and lexical readability ($\mathcal{L}$).
+
+Comprehensive experiments across four domains, 12 embedding configurations, 6 LLM backends, and 30 human-evaluated prompts reveal: (1) dense embeddings achieve 37--73\% higher retrieval precision; (2) Gemini-3-Flash-Preview achieves 165$\times$ expansion ratio; (3) complex queries outperform simple ones by 92\%; (4) human evaluators rate \primesys{} outputs 4.2/5 with 87\% inter-rater agreement; and (5) caching provides 1,944$\times$ speedup. We also present systematic failure analysis identifying when amplification degrades performance. \primesys{} is released as an open-source library (\texttt{pip install prompt-amplifier}).
 
 \end{abstract}
 

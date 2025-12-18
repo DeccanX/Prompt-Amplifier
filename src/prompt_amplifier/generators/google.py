@@ -14,15 +14,21 @@ class GoogleGenerator(BaseGenerator):
     """
     Google Gemini generator for prompt expansion.
 
-    Supports Gemini 1.5 and 2.0 models.
+    Supports Gemini 2.5 and experimental 3.0 models.
+
+    Models:
+        - gemini-2.5-flash: Latest stable flash model (recommended)
+        - gemini-2.5-pro: Pro model for complex tasks
+        - gemini-3-flash-preview: Experimental next-gen model
+        - gemini-2.0-flash: Previous stable version
 
     Example:
-        >>> generator = GoogleGenerator(model="gemini-2.0-flash")
+        >>> generator = GoogleGenerator(model="gemini-2.5-flash")
         >>> result = generator.generate("Expand this prompt", context="...")
         >>> print(result.content)
 
     Args:
-        model: Gemini model name (default: gemini-2.0-flash)
+        model: Gemini model name (default: gemini-2.5-flash)
         api_key: Google API key (or set GOOGLE_API_KEY env var)
         temperature: Sampling temperature (0-1)
         max_tokens: Maximum output tokens
@@ -30,7 +36,7 @@ class GoogleGenerator(BaseGenerator):
 
     def __init__(
         self,
-        model: str = "gemini-2.0-flash",
+        model: str = "gemini-2.5-flash",
         api_key: str | None = None,
         temperature: float = 0.7,
         max_tokens: int = 2000,

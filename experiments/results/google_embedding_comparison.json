@@ -1,0 +1,32 @@
+[
+  {
+    "experiment_name": "google_embedding_comparison",
+    "configuration": {
+      "model": "gemini-embedding-001"
+    },
+    "metrics": {
+      "corpus_embedding_time_ms": 1583.85,
+      "avg_query_embedding_time_ms": 461.96,
+      "dimension": 768,
+      "corpus_size": 10,
+      "embeddings_per_second": 6.31
+    },
+    "timestamp": "2025-12-18T17:09:12.110275",
+    "duration_ms": 2969.712018966675
+  },
+  {
+    "experiment_name": "google_embedding_comparison",
+    "configuration": {
+      "model": "text-embedding-004"
+    },
+    "metrics": {
+      "corpus_embedding_time_ms": 553.59,
+      "avg_query_embedding_time_ms": 383.66,
+      "dimension": 768,
+      "corpus_size": 10,
+      "embeddings_per_second": 18.06
+    },
+    "timestamp": "2025-12-18T17:09:13.814960",
+    "duration_ms": 1704.5764923095703
+  }
+]

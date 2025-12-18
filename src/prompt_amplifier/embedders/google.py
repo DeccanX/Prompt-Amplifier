@@ -19,26 +19,31 @@ class GoogleEmbedder(BaseEmbedder):
     Uses Google's text-embedding models via the Generative AI SDK.
 
     Models:
-        - text-embedding-004: Latest model (768 dims)
+        - gemini-embedding-001: Latest Gemini embedding model (768 dims)
+        - text-embedding-004: Stable text embedding model (768 dims)
         - embedding-001: Legacy model (768 dims)
 
     Requires: google-generativeai
 
     Example:
-        >>> embedder = GoogleEmbedder(model="text-embedding-004")
+        >>> embedder = GoogleEmbedder(model="gemini-embedding-001")
         >>> result = embedder.embed(["Hello world"])
     """
 
     MODEL_DIMENSIONS = {
+        "gemini-embedding-001": 768,
+        "gemini-embedding-exp": 768,
+        "gemini-embedding-exp-03-07": 768,
         "text-embedding-004": 768,
         "embedding-001": 768,
+        "models/gemini-embedding-001": 768,
         "models/text-embedding-004": 768,
         "models/embedding-001": 768,
     }
 
     def __init__(
         self,
-        model: str = "text-embedding-004",
+        model: str = "gemini-embedding-001",
         api_key: str | None = None,
         task_type: str = "RETRIEVAL_DOCUMENT",
         batch_size: int = 100,

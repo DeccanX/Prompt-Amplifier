@@ -1,0 +1,70 @@
+[
+  {
+    "experiment_name": "failure_analysis",
+    "configuration": {
+      "embedder": "gemini-embedding-001",
+      "generator": "gemini-2.5-flash"
+    },
+    "metrics": {
+      "failure_cases": [
+        {
+          "case": "irrelevant_context",
+          "description": "When retrieved context is topically unrelated to the query",
+          "prompt": "Design a REST API for user authentication",
+          "context_type": "cooking, history, biology documents",
+          "expansion_length": 234,
+          "failure_mode": "Context noise may confuse the expansion",
+          "recommendation": "Use semantic similarity threshold to filter low-relevance chunks"
+        },
+        {
+          "case": "already_detailed_prompt",
+          "description": "When the input prompt is already comprehensive",
+          "original_words": 62,
+          "expanded_words": 205,
+          "expansion_ratio": 3.31,
+          "failure_mode": "Minimal value-add, potential redundancy",
+          "recommendation": "Detect prompt complexity and skip expansion for detailed inputs"
+        },
+        {
+          "case": "ambiguous_prompt",
+          "description": "When the prompt lacks sufficient specificity",
+          "prompt": "Which language should I use?",
+          "context_type": "conflicting recommendations",
+          "failure_mode": "Expansion may inherit context ambiguity",
+          "recommendation": "Prompt for clarification or expand all interpretations"
+        },
+        {
+          "case": "minimal_context",
+          "description": "When knowledge base has very limited content",
+          "prompt": "Build a secure API with authentication",
+          "context_size": 2,
+          "failure_mode": "Retrieval adds minimal value, falls back to model knowledge",
+          "recommendation": "Set minimum context threshold, use model-only mode when insufficient"
+        }
+      ],
+      "summary": {
+        "total_failure_cases": 4,
+        "categories": [
+          "irrelevant_context",
+          "already_detailed_prompt",
+          "ambiguous_prompt",
+          "minimal_context"
+        ],
+        "key_insights": [
+          "Context relevance is critical - irrelevant retrieval hurts more than no retrieval",
+          "Detailed inputs may not benefit from expansion",
+          "Ambiguous prompts require disambiguation before expansion",
+          "Minimum context threshold needed for retrieval to add value"
+        ],
+        "mitigation_strategies": [
+          "Implement semantic similarity thresholds for context filtering",
+          "Add prompt complexity detection to skip already-detailed inputs",
+          "Use query rewriting for ambiguous prompts",
+          "Fall back to model-only generation when context is insufficient"
+        ]
+      }
+    },
+    "timestamp": "2025-12-18T17:16:52.174371",
+    "duration_ms": 0
+  }
+]

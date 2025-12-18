@@ -1,0 +1,110 @@
+[
+  {
+    "experiment_name": "e2e_pipeline_latest",
+    "configuration": {
+      "embedder": "gemini-embedding-001",
+      "generator": "gemini-2.5-flash",
+      "domain": "software_engineering"
+    },
+    "metrics": {
+      "domain": "software_engineering",
+      "documents_count": 5,
+      "expansions": [
+        {
+          "prompt": "Design a secure API",
+          "expansion_ratio": 55.5,
+          "input_words": 4,
+          "output_words": 222,
+          "retrieval_time_ms": 472.58,
+          "generation_time_ms": 8985.71,
+          "total_time_ms": 9458.54,
+          "context_chunks": 5
+        },
+        {
+          "prompt": "Handle authentication",
+          "expansion_ratio": 49.0,
+          "input_words": 2,
+          "output_words": 98,
+          "retrieval_time_ms": 610.47,
+          "generation_time_ms": 5426.89,
+          "total_time_ms": 6037.59,
+          "context_chunks": 5
+        }
+      ]
+    },
+    "timestamp": "2025-12-18T17:10:32.746085",
+    "duration_ms": 15496.130000000001
+  },
+  {
+    "experiment_name": "e2e_pipeline_latest",
+    "configuration": {
+      "embedder": "gemini-embedding-001",
+      "generator": "gemini-2.5-flash",
+      "domain": "data_science"
+    },
+    "metrics": {
+      "domain": "data_science",
+      "documents_count": 5,
+      "expansions": [
+        {
+          "prompt": "Build a prediction model",
+          "expansion_ratio": 56.75,
+          "input_words": 4,
+          "output_words": 227,
+          "retrieval_time_ms": 444.24,
+          "generation_time_ms": 8659.46,
+          "total_time_ms": 9104.13,
+          "context_chunks": 5
+        },
+        {
+          "prompt": "Evaluate model performance",
+          "expansion_ratio": 86.0,
+          "input_words": 3,
+          "output_words": 258,
+          "retrieval_time_ms": 420.5,
+          "generation_time_ms": 5942.58,
+          "total_time_ms": 6363.42,
+          "context_chunks": 5
+        }
+      ]
+    },
+    "timestamp": "2025-12-18T17:10:48.907189",
+    "duration_ms": 15467.55
+  },
+  {
+    "experiment_name": "e2e_pipeline_latest",
+    "configuration": {
+      "embedder": "gemini-embedding-001",
+      "generator": "gemini-2.5-flash",
+      "domain": "content_creation"
+    },
+    "metrics": {
+      "domain": "content_creation",
+      "documents_count": 5,
+      "expansions": [
+        {
+          "prompt": "Write a blog post",
+          "expansion_ratio": 68.75,
+          "input_words": 4,
+          "output_words": 275,
+          "retrieval_time_ms": 429.45,
+          "generation_time_ms": 11228.31,
+          "total_time_ms": 11657.92,
+          "context_chunks": 5
+        },
+        {
+          "prompt": "Create social media content",
+          "expansion_ratio": 55.5,
+          "input_words": 4,
+          "output_words": 222,
+          "retrieval_time_ms": 417.96,
+          "generation_time_ms": 8351.54,
+          "total_time_ms": 8769.79,
+          "context_chunks": 5
+        }
+      ]
+    },
+    "timestamp": "2025-12-18T17:11:10.122080",
+    "duration_ms": 20427.71
+  }
+]

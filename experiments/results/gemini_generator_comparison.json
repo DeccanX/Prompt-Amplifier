@@ -1,0 +1,74 @@
+[
+  {
+    "experiment_name": "gemini_generator_comparison",
+    "configuration": {
+      "model": "gemini-2.5-flash"
+    },
+    "metrics": {
+      "prompts_tested": 3,
+      "total_input_tokens": 304,
+      "total_output_tokens": 1193,
+      "total_generation_time_ms": 36514.91618156433,
+      "avg_expansion_ratio": 121.47,
+      "expansions": [
+        {
+          "prompt": "Write code for API",
+          "expansion_ratio": 14.75,
+          "output_length": 398,
+          "generation_time_ms": 12163.96
+        },
+        {
+          "prompt": "Analyze data",
+          "expansion_ratio": 189.0,
+          "output_length": 3045,
+          "generation_time_ms": 12274.32
+        },
+        {
+          "prompt": "Create a presentation",
+          "expansion_ratio": 160.67,
+          "output_length": 3687,
+          "generation_time_ms": 12076.63
+        }
+      ],
+      "avg_generation_time_ms": 12171.64
+    },
+    "timestamp": "2025-12-18T17:09:50.332109",
+    "duration_ms": 36514.91618156433
+  },
+  {
+    "experiment_name": "gemini_generator_comparison",
+    "configuration": {
+      "model": "gemini-3-flash-preview"
+    },
+    "metrics": {
+      "prompts_tested": 3,
+      "total_input_tokens": 304,
+      "total_output_tokens": 1740,
+      "total_generation_time_ms": 26244.393825531006,
+      "avg_expansion_ratio": 165.28,
+      "expansions": [
+        {
+          "prompt": "Write code for API",
+          "expansion_ratio": 99.0,
+          "output_length": 2949,
+          "generation_time_ms": 8644.28
+        },
+        {
+          "prompt": "Analyze data",
+          "expansion_ratio": 246.5,
+          "output_length": 3461,
+          "generation_time_ms": 8559.94
+        },
+        {
+          "prompt": "Create a presentation",
+          "expansion_ratio": 150.33,
+          "output_length": 3098,
+          "generation_time_ms": 9040.17
+        }
+      ],
+      "avg_generation_time_ms": 8748.13
+    },
+    "timestamp": "2025-12-18T17:10:16.577105",
+    "duration_ms": 26244.393825531006
+  }
+]

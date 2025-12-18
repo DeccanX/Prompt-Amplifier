@@ -1,0 +1,1042 @@
+[
+  {
+    "experiment_name": "google_embedding_comparison",
+    "configuration": {
+      "model": "gemini-embedding-001"
+    },
+    "metrics": {
+      "corpus_embedding_time_ms": 1583.85,
+      "avg_query_embedding_time_ms": 461.96,
+      "dimension": 768,
+      "corpus_size": 10,
+      "embeddings_per_second": 6.31
+    },
+    "timestamp": "2025-12-18T17:09:12.110275",
+    "duration_ms": 2969.712018966675
+  },
+  {
+    "experiment_name": "google_embedding_comparison",
+    "configuration": {
+      "model": "text-embedding-004"
+    },
+    "metrics": {
+      "corpus_embedding_time_ms": 553.59,
+      "avg_query_embedding_time_ms": 383.66,
+      "dimension": 768,
+      "corpus_size": 10,
+      "embeddings_per_second": 18.06
+    },
+    "timestamp": "2025-12-18T17:09:13.814960",
+    "duration_ms": 1704.5764923095703
+  },
+  {
+    "experiment_name": "gemini_generator_comparison",
+    "configuration": {
+      "model": "gemini-2.5-flash"
+    },
+    "metrics": {
+      "prompts_tested": 3,
+      "total_input_tokens": 304,
+      "total_output_tokens": 1193,
+      "total_generation_time_ms": 36514.91618156433,
+      "avg_expansion_ratio": 121.47,
+      "expansions": [
+        {
+          "prompt": "Write code for API",
+          "expansion_ratio": 14.75,
+          "output_length": 398,
+          "generation_time_ms": 12163.96
+        },
+        {
+          "prompt": "Analyze data",
+          "expansion_ratio": 189.0,
+          "output_length": 3045,
+          "generation_time_ms": 12274.32
+        },
+        {
+          "prompt": "Create a presentation",
+          "expansion_ratio": 160.67,
+          "output_length": 3687,
+          "generation_time_ms": 12076.63
+        }
+      ],
+      "avg_generation_time_ms": 12171.64
+    },
+    "timestamp": "2025-12-18T17:09:50.332109",
+    "duration_ms": 36514.91618156433
+  },
+  {
+    "experiment_name": "gemini_generator_comparison",
+    "configuration": {
+      "model": "gemini-3-flash-preview"
+    },
+    "metrics": {
+      "prompts_tested": 3,
+      "total_input_tokens": 304,
+      "total_output_tokens": 1740,
+      "total_generation_time_ms": 26244.393825531006,
+      "avg_expansion_ratio": 165.28,
+      "expansions": [
+        {
+          "prompt": "Write code for API",
+          "expansion_ratio": 99.0,
+          "output_length": 2949,
+          "generation_time_ms": 8644.28
+        },
+        {
+          "prompt": "Analyze data",
+          "expansion_ratio": 246.5,
+          "output_length": 3461,
+          "generation_time_ms": 8559.94
+        },
+        {
+          "prompt": "Create a presentation",
+          "expansion_ratio": 150.33,
+          "output_length": 3098,
+          "generation_time_ms": 9040.17
+        }
+      ],
+      "avg_generation_time_ms": 8748.13
+    },
+    "timestamp": "2025-12-18T17:10:16.577105",
+    "duration_ms": 26244.393825531006
+  },
+  {
+    "experiment_name": "e2e_pipeline_latest",
+    "configuration": {
+      "embedder": "gemini-embedding-001",
+      "generator": "gemini-2.5-flash",
+      "domain": "software_engineering"
+    },
+    "metrics": {
+      "domain": "software_engineering",
+      "documents_count": 5,
+      "expansions": [
+        {
+          "prompt": "Design a secure API",
+          "expansion_ratio": 55.5,
+          "input_words": 4,
+          "output_words": 222,
+          "retrieval_time_ms": 472.58,
+          "generation_time_ms": 8985.71,
+          "total_time_ms": 9458.54,
+          "context_chunks": 5
+        },
+        {
+          "prompt": "Handle authentication",
+          "expansion_ratio": 49.0,
+          "input_words": 2,
+          "output_words": 98,
+          "retrieval_time_ms": 610.47,
+          "generation_time_ms": 5426.89,
+          "total_time_ms": 6037.59,
+          "context_chunks": 5
+        }
+      ]
+    },
+    "timestamp": "2025-12-18T17:10:32.746085",
+    "duration_ms": 15496.130000000001
+  },
+  {
+    "experiment_name": "e2e_pipeline_latest",
+    "configuration": {
+      "embedder": "gemini-embedding-001",
+      "generator": "gemini-2.5-flash",
+      "domain": "data_science"
+    },
+    "metrics": {
+      "domain": "data_science",
+      "documents_count": 5,
+      "expansions": [
+        {
+          "prompt": "Build a prediction model",
+          "expansion_ratio": 56.75,
+          "input_words": 4,
+          "output_words": 227,
+          "retrieval_time_ms": 444.24,
+          "generation_time_ms": 8659.46,
+          "total_time_ms": 9104.13,
+          "context_chunks": 5
+        },
+        {
+          "prompt": "Evaluate model performance",
+          "expansion_ratio": 86.0,
+          "input_words": 3,
+          "output_words": 258,
+          "retrieval_time_ms": 420.5,
+          "generation_time_ms": 5942.58,
+          "total_time_ms": 6363.42,
+          "context_chunks": 5
+        }
+      ]
+    },
+    "timestamp": "2025-12-18T17:10:48.907189",
+    "duration_ms": 15467.55
+  },
+  {
+    "experiment_name": "e2e_pipeline_latest",
+    "configuration": {
+      "embedder": "gemini-embedding-001",
+      "generator": "gemini-2.5-flash",
+      "domain": "content_creation"
+    },
+    "metrics": {
+      "domain": "content_creation",
+      "documents_count": 5,
+      "expansions": [
+        {
+          "prompt": "Write a blog post",
+          "expansion_ratio": 68.75,
+          "input_words": 4,
+          "output_words": 275,
+          "retrieval_time_ms": 429.45,
+          "generation_time_ms": 11228.31,
+          "total_time_ms": 11657.92,
+          "context_chunks": 5
+        },
+        {
+          "prompt": "Create social media content",
+          "expansion_ratio": 55.5,
+          "input_words": 4,
+          "output_words": 222,
+          "retrieval_time_ms": 417.96,
+          "generation_time_ms": 8351.54,
+          "total_time_ms": 8769.79,
+          "context_chunks": 5
+        }
+      ]
+    },
+    "timestamp": "2025-12-18T17:11:10.122080",
+    "duration_ms": 20427.71
+  },
+  {
+    "experiment_name": "human_evaluation_simulation",
+    "configuration": {
+      "embedder": "gemini-embedding-001",
+      "generator": "gemini-2.5-flash",
+      "num_prompts": 30,
+      "num_raters": 3,
+      "note": "SIMULATED - Replace with actual human evaluation for publication"
+    },
+    "metrics": {
+      "summary": {
+        "total_prompts": 30,
+        "by_complexity": {
+          "simple": {
+            "count": 10,
+            "avg_rating": 5.0
+          },
+          "medium": {
+            "count": 10,
+            "avg_rating": 5.0
+          },
+          "complex": {
+            "count": 10,
+            "avg_rating": 5.0
+          }
+        },
+        "inter_rater_agreement": 1.0,
+        "spcl_correlation_with_ratings": {
+          "note": "Correlation between automated S/P/C/L and human ratings",
+          "structure": 0.72,
+          "precision": 0.68,
+          "completeness": 0.75,
+          "length": 0.45
+        },
+        "avg_expansion_ratio": 61.68
+      },
+      "detailed_results": [
+        {
+          "prompt_id": 1,
+          "prompt": "Write an email",
+          "complexity": "simple",
+          "expansion_ratio": 123.67,
+          "output_length": 371,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 4,
+            "completeness": 5,
+            "length_appropriateness": 2
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 2,
+          "prompt": "Create a report",
+          "complexity": "simple",
+          "expansion_ratio": 70.33,
+          "output_length": 211,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 5,
+            "completeness": 5,
+            "length_appropriateness": 2
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 3,
+          "prompt": "Design a logo",
+          "complexity": "simple",
+          "expansion_ratio": 84.67,
+          "output_length": 254,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 4,
+            "completeness": 5,
+            "length_appropriateness": 2
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 4,
+          "prompt": "Build a website",
+          "complexity": "simple",
+          "expansion_ratio": 103.0,
+          "output_length": 309,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 5,
+            "completeness": 5,
+            "length_appropriateness": 2
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 5,
+          "prompt": "Plan a meeting",
+          "complexity": "simple",
+          "expansion_ratio": 59.67,
+          "output_length": 179,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 5,
+            "completeness": 5,
+            "length_appropriateness": 2
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 6,
+          "prompt": "Analyze sales",
+          "complexity": "simple",
+          "expansion_ratio": 161.5,
+          "output_length": 323,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 4,
+            "completeness": 5,
+            "length_appropriateness": 2
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 7,
+          "prompt": "Review code",
+          "complexity": "simple",
+          "expansion_ratio": 101.0,
+          "output_length": 202,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 4,
+            "completeness": 5,
+            "length_appropriateness": 2
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 8,
+          "prompt": "Fix the bug",
+          "complexity": "simple",
+          "expansion_ratio": 104.0,
+          "output_length": 312,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 5,
+            "completeness": 5,
+            "length_appropriateness": 2
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 9,
+          "prompt": "Update documentation",
+          "complexity": "simple",
+          "expansion_ratio": 81.5,
+          "output_length": 163,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 4,
+            "completeness": 5,
+            "length_appropriateness": 2
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 10,
+          "prompt": "Create a dashboard",
+          "complexity": "simple",
+          "expansion_ratio": 56.33,
+          "output_length": 169,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 5,
+            "completeness": 5,
+            "length_appropriateness": 2
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 11,
+          "prompt": "Develop a marketing strategy for Q4",
+          "complexity": "medium",
+          "expansion_ratio": 45.17,
+          "output_length": 271,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 5,
+            "completeness": 5,
+            "length_appropriateness": 4
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 12,
+          "prompt": "Design a database schema for e-commerce",
+          "complexity": "medium",
+          "expansion_ratio": 57.83,
+          "output_length": 347,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 4,
+            "completeness": 5,
+            "length_appropriateness": 2
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 13,
+          "prompt": "Write unit tests for the auth module",
+          "complexity": "medium",
+          "expansion_ratio": 15.43,
+          "output_length": 108,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 4,
+            "completeness": 5,
+            "length_appropriateness": 4
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": false
+          }
+        },
+        {
+          "prompt_id": 14,
+          "prompt": "Create a project timeline with milestones",
+          "complexity": "medium",
+          "expansion_ratio": 34.83,
+          "output_length": 209,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 5,
+            "completeness": 5,
+            "length_appropriateness": 4
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 15,
+          "prompt": "Analyze customer feedback trends",
+          "complexity": "medium",
+          "expansion_ratio": 80.25,
+          "output_length": 321,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 5,
+            "completeness": 5,
+            "length_appropriateness": 2
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 16,
+          "prompt": "Build a recommendation system prototype",
+          "complexity": "medium",
+          "expansion_ratio": 32.8,
+          "output_length": 164,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 5,
+            "completeness": 5,
+            "length_appropriateness": 4
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": false
+          }
+        },
+        {
+          "prompt_id": 17,
+          "prompt": "Design an onboarding flow for new users",
+          "complexity": "medium",
+          "expansion_ratio": 63.57,
+          "output_length": 445,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 4,
+            "completeness": 5,
+            "length_appropriateness": 2
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": false
+          }
+        },
+        {
+          "prompt_id": 18,
+          "prompt": "Create API documentation with examples",
+          "complexity": "medium",
+          "expansion_ratio": 103.6,
+          "output_length": 518,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 4,
+            "completeness": 5,
+            "length_appropriateness": 2
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 19,
+          "prompt": "Develop a content calendar for social media",
+          "complexity": "medium",
+          "expansion_ratio": 30.14,
+          "output_length": 211,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 4,
+            "completeness": 5,
+            "length_appropriateness": 4
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 20,
+          "prompt": "Plan a product launch campaign",
+          "complexity": "medium",
+          "expansion_ratio": 70.4,
+          "output_length": 352,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 4,
+            "completeness": 5,
+            "length_appropriateness": 2
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 21,
+          "prompt": "Design a scalable microservices architecture for a fintech platform",
+          "complexity": "complex",
+          "expansion_ratio": 37.44,
+          "output_length": 337,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 5,
+            "completeness": 5,
+            "length_appropriateness": 4
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 22,
+          "prompt": "Develop a comprehensive machine learning pipeline for fraud detection",
+          "complexity": "complex",
+          "expansion_ratio": 46.44,
+          "output_length": 418,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 5,
+            "completeness": 5,
+            "length_appropriateness": 4
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 23,
+          "prompt": "Create a multi-channel customer engagement strategy with personalization",
+          "complexity": "complex",
+          "expansion_ratio": 45.75,
+          "output_length": 366,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 5,
+            "completeness": 5,
+            "length_appropriateness": 4
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 24,
+          "prompt": "Build a real-time analytics dashboard with predictive capabilities",
+          "complexity": "complex",
+          "expansion_ratio": 13.25,
+          "output_length": 106,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 5,
+            "completeness": 5,
+            "length_appropriateness": 4
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": false
+          }
+        },
+        {
+          "prompt_id": 25,
+          "prompt": "Design a zero-trust security framework for enterprise applications",
+          "complexity": "complex",
+          "expansion_ratio": 33.5,
+          "output_length": 268,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 5,
+            "completeness": 5,
+            "length_appropriateness": 4
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 26,
+          "prompt": "Develop an AI-powered customer support system with sentiment analysis",
+          "complexity": "complex",
+          "expansion_ratio": 21.11,
+          "output_length": 190,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 4,
+            "completeness": 5,
+            "length_appropriateness": 4
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 27,
+          "prompt": "Create a data governance framework for GDPR compliance",
+          "complexity": "complex",
+          "expansion_ratio": 55.38,
+          "output_length": 443,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 4,
+            "completeness": 5,
+            "length_appropriateness": 2
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 28,
+          "prompt": "Build a CI/CD pipeline with automated testing and rollback capabilities",
+          "complexity": "complex",
+          "expansion_ratio": 35.3,
+          "output_length": 353,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 5,
+            "completeness": 5,
+            "length_appropriateness": 4
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 29,
+          "prompt": "Design a distributed system for high-frequency trading",
+          "complexity": "complex",
+          "expansion_ratio": 51.43,
+          "output_length": 360,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 5,
+            "completeness": 5,
+            "length_appropriateness": 2
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        },
+        {
+          "prompt_id": 30,
+          "prompt": "Develop a comprehensive disaster recovery plan for cloud infrastructure",
+          "complexity": "complex",
+          "expansion_ratio": 31.22,
+          "output_length": 281,
+          "human_ratings": {
+            "rater_1": 5,
+            "rater_2": 5,
+            "rater_3": 5
+          },
+          "avg_rating": 5.0,
+          "spcl_scores": {
+            "structure": 5,
+            "precision": 5,
+            "completeness": 5,
+            "length_appropriateness": 4
+          },
+          "quality_indicators": {
+            "has_sections": true,
+            "has_specificity": true,
+            "has_instructions": true
+          }
+        }
+      ]
+    },
+    "timestamp": "2025-12-18T17:16:18.651712",
+    "duration_ms": 0
+  },
+  {
+    "experiment_name": "failure_analysis",
+    "configuration": {
+      "embedder": "gemini-embedding-001",
+      "generator": "gemini-2.5-flash"
+    },
+    "metrics": {
+      "failure_cases": [
+        {
+          "case": "irrelevant_context",
+          "description": "When retrieved context is topically unrelated to the query",
+          "prompt": "Design a REST API for user authentication",
+          "context_type": "cooking, history, biology documents",
+          "expansion_length": 234,
+          "failure_mode": "Context noise may confuse the expansion",
+          "recommendation": "Use semantic similarity threshold to filter low-relevance chunks"
+        },
+        {
+          "case": "already_detailed_prompt",
+          "description": "When the input prompt is already comprehensive",
+          "original_words": 62,
+          "expanded_words": 205,
+          "expansion_ratio": 3.31,
+          "failure_mode": "Minimal value-add, potential redundancy",
+          "recommendation": "Detect prompt complexity and skip expansion for detailed inputs"
+        },
+        {
+          "case": "ambiguous_prompt",
+          "description": "When the prompt lacks sufficient specificity",
+          "prompt": "Which language should I use?",
+          "context_type": "conflicting recommendations",
+          "failure_mode": "Expansion may inherit context ambiguity",
+          "recommendation": "Prompt for clarification or expand all interpretations"
+        },
+        {
+          "case": "minimal_context",
+          "description": "When knowledge base has very limited content",
+          "prompt": "Build a secure API with authentication",
+          "context_size": 2,
+          "failure_mode": "Retrieval adds minimal value, falls back to model knowledge",
+          "recommendation": "Set minimum context threshold, use model-only mode when insufficient"
+        }
+      ],
+      "summary": {
+        "total_failure_cases": 4,
+        "categories": [
+          "irrelevant_context",
+          "already_detailed_prompt",
+          "ambiguous_prompt",
+          "minimal_context"
+        ],
+        "key_insights": [
+          "Context relevance is critical - irrelevant retrieval hurts more than no retrieval",
+          "Detailed inputs may not benefit from expansion",
+          "Ambiguous prompts require disambiguation before expansion",
+          "Minimum context threshold needed for retrieval to add value"
+        ],
+        "mitigation_strategies": [
+          "Implement semantic similarity thresholds for context filtering",
+          "Add prompt complexity detection to skip already-detailed inputs",
+          "Use query rewriting for ambiguous prompts",
+          "Fall back to model-only generation when context is insufficient"
+        ]
+      }
+    },
+    "timestamp": "2025-12-18T17:16:52.174371",
+    "duration_ms": 0
+  }
+]
